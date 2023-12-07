@@ -1,4 +1,5 @@
 -- ATTACH DATABASE './Bookstore.db' as Bookstore; -- This line should be run once when starting the app
+-- For testing purposes. To be deleted
 DROP TABLE IF EXISTS Users;
 
 -- For testing purposes. To be deleted
@@ -7,7 +8,6 @@ DROP TABLE IF EXISTS Orders;
 -- For testing purposes. To be deleted
 DROP TABLE IF EXISTS Books;
 
--- For testing purposes. To be deleted
 -- Creates Users table
 CREATE TABLE IF NOT EXISTS
     Users (
