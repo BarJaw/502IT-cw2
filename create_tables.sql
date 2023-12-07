@@ -1,6 +1,7 @@
 -- ATTACH DATABASE './Bookstore.db' as Bookstore;
 DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS Orders;
+DROP TABLE IF EXISTS Books;
 
 CREATE TABLE Users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,11 +24,23 @@ CREATE TABLE Orders (
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
+CREATE TABLE Books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    author TEXT NOT NULL,
+    stock INTEGER NOT NULL,
+    -- all_books TEXT NOT NULL,
+    price REAL NOT NULL
+);
 
--- INSERT INTO Users (fname, lname, login, password, salt, role)
--- VALUES
--- ('b', 'j', 'bj', 'pass', '1', 'admin');
+INSERT INTO Users (fname, lname, login, password, salt, role)
+VALUES
+('b', 'j', 'bj', 'pass', '1', 'admin');
 
--- INSERT INTO Orders (date, priority, status, address, book_list, user_id)
--- VALUES
--- ('07.12.2023', 'high', 'in progress', 'essa 23/1', '{"dziady": 1}', 1);
+INSERT INTO Orders (date, priority, status, address, book_list, user_id)
+VALUES
+('07.12.2023', 'high', 'in progress', 'essa 23/1', '{"dziady": 1}', 1);
+
+INSERT INTO Books (name, author, stock, price)
+VALUES
+('dziady', 'mickiewicz', 10, 5.99);
