@@ -26,7 +26,7 @@ class Customer(User):
             if book.stock_quantity >= quantity:  # check if the requested amount of books is available
                 if book not in self.cart:  # check if the book hasn't been added to the cart before
                     self.cart.update({book: quantity})  # could be 'book.name' instead of book object
-                    book.stock_quantity = - quantity
+                    book.stock_quantity -= quantity
                 else:
                     self.cart[book] += quantity  # if the book is already in the cart, update its quantity
             else:
