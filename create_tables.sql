@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS
         lname TEXT NOT NULL,
         login TEXT NOT NULL,
         password TEXT NOT NULL,
-        salt TEXT NOT NULL,
         role TEXT NOT NULL
     );
 
