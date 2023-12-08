@@ -2,28 +2,32 @@ import sqlite3
 import bcrypt
 
 class UserDatabase:
-    def __init__(self, database_name='user_database.db'):
+    def __init__(self, database_name='bookstore.db'):
         self.conn = sqlite3.connect(database_name)
         self.cursor = self.conn.cursor()
         self.create_table()
 
     def create_table(self):
         self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
+            CREATE TABLE IF NOT EXISTS Users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                fname TEXT NOT NULL,
+                lname TEXT NOT NULL,
                 username TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL
+                password TEXT NOT NULL,
+                role TEXT NOT NULL
             )
         ''')
         self.conn.commit()
 
-    def register_user(self, username, password):
+    def register_user(self, fname, lname, username, password, role):
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        self.cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hashed_password))
+        self.cursor.execute("INSERT INTO Users (fname, lname, username, password, role) VALUES (?, ?, ?, ?, ?)",
+                            (fname, lname, username, hashed_password, role))
         self.conn.commit()
 
     def get_user(self, username):
-        self.cursor.execute("SELECT * FROM users WHERE username=?", (username,))
+        self.cursor.execute("SELECT * FROM Users WHERE username=?", (username,))
         return self.cursor.fetchone()
 
     def close_connection(self):
@@ -35,14 +39,17 @@ class AuthSystem:
 
     def register(self):
         print("\033[94m=== Registration ===\033[0m")
+        fname = input("Enter your first name: ")
+        lname = input("Enter your last name: ")
         username = input("Enter your username: ")
         password = input("Enter your password: ")
+        role = "customer"
 
         existing_user = self.user_db.get_user(username)
         if existing_user:
             print("\033[91m=== Username already exists. Please choose another one\033[0m")
         else:
-            self.user_db.register_user(username, password)
+            self.user_db.register_user(fname, lname, username, password, role)
             print("\033[92m=== Registration successful! ===\033[0m")
 
     def login(self):
