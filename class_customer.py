@@ -23,14 +23,20 @@ class Customer(User):
 
     def add_to_cart(self, book, quantity):
         if book in book.all_books:  # 'book.all_books' is a placeholder for database with books
-            if book.stock_quantity >= quantity:  # check if the requested amount of books is available
-                if book not in self.cart:  # check if the book hasn't been added to the cart before
-                    self.cart.update({book: quantity})  # could be 'book.name' instead of book object
-                    book.stock_quantity = - quantity
+            if quantity > 0:
+                if len(book.stock_quantity) != 0:
+                    if book.stock_quantity >= quantity:  # check if the requested amount of books is available and it is more 0
+                        if book not in self.cart:  # check if the book hasn't been added to the cart before
+                            self.cart.update({book: quantity})  # could be 'book.name' instead of book object
+                            book.stock_quantity -= quantity
+                        else:
+                            self.cart[book] += quantity  # if the book is already in the cart, update its quantity
+                    else:
+                        print("Requested amount is more than left in stock")
                 else:
-                    self.cart[book] += quantity  # if the book is already in the cart, update its quantity
+                    print(f"No more {book.name} left in stock")
             else:
-                print(f"No more {book.name} left in stock")
+                print("Quantity should be more than 0")
         else:
             print("No such book in the store")
 
