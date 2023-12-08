@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS
         date TEXT NOT NULL,
         priority TEXT NOT NULL,
         status TEXT NOT NULL,
-        address TEXT NOT NULL,
+        -- address TEXT NOT NULL,
         book_list TEXT NOT NULL,
         user_id INTEGER NOT NULL,
         FOREIGN KEY (user_id) REFERENCES Users (id) -- Relationship Users 1..* Orders
@@ -40,7 +40,6 @@ CREATE TABLE IF NOT EXISTS
         name TEXT NOT NULL,
         author TEXT NOT NULL,
         stock INTEGER NOT NULL,
-        -- all_books TEXT NOT NULL,
         price REAL NOT NULL
     );
 
