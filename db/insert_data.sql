@@ -1,7 +1,7 @@
 INSERT INTO
     Users (fname, lname, username, password_hash, role)
 VALUES
-    ('b', 'j', 'bj', 'pass', 'admin');
+    ('b', 'j', 'bj', '$2a$12$LiTzvF55MoKtPCLdtWqOMuc5u4knQiiz3oTUeaC1Jqb3v6k.ySIAO', 'admin');
 
 INSERT INTO
     Orders (date, priority, status, book_list, user_id)
