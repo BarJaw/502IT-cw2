@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fname TEXT NOT NULL,
         lname TEXT NOT NULL,
-        login TEXT NOT NULL,
+        username TEXT NOT NULL,
         password TEXT NOT NULL,
         role TEXT NOT NULL
     );
