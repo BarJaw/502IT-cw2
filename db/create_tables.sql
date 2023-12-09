@@ -1,4 +1,3 @@
--- ATTACH DATABASE './Bookstore.db' as Bookstore; -- This line should be run once when starting the app
 -- For testing purposes. To be deleted
 DROP TABLE IF EXISTS Users;
 
@@ -15,7 +14,7 @@ CREATE TABLE IF NOT EXISTS
         fname TEXT NOT NULL,
         lname TEXT NOT NULL,
         username TEXT NOT NULL,
-        password TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
         role TEXT NOT NULL
     );
 
@@ -43,31 +42,4 @@ CREATE TABLE IF NOT EXISTS
     );
 
 -- Queries to add some testing values to the database
-INSERT INTO
-    Users (fname, lname, login, password, salt, role)
-VALUES
-    ('b', 'j', 'bj', 'pass', '1', 'admin');
 
-INSERT INTO
-    Orders (
-        date,
-        priority,
-        status,
-        address,
-        book_list,
-        user_id
-    )
-VALUES
-    (
-        '07.12.2023',
-        'high',
-        'in progress',
-        'essa 23/1',
-        '{"dziady": 1}',
-        1
-    );
-
-INSERT INTO
-    Books (name, author, stock, price)
-VALUES
-    ('dziady', 'mickiewicz', 10, 5.99);
