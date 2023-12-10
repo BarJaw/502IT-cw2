@@ -1,7 +1,13 @@
 INSERT INTO
     Users (fname, lname, username, password_hash, role)
 VALUES
-    ('b', 'j', 'bj', '$2a$12$LiTzvF55MoKtPCLdtWqOMuc5u4knQiiz3oTUeaC1Jqb3v6k.ySIAO', 'customer');
+    (
+        'b',
+        'j',
+        'bj2',
+        '$2a$12$LiTzvF55MoKtPCLdtWqOMuc5u4knQiiz3oTUeaC1Jqb3v6k.ySIAO',
+        'employee'
+    );
 
 INSERT INTO
     Orders (date, priority, status, book_list, user_id)
@@ -17,7 +23,11 @@ VALUES
 INSERT INTO
     Books (name, author, stock, price)
 VALUES
-    ('dziady', 'mickiewicz', 10, 5.99);
+    ('dziady cz. 1', 'mickiewicz', 10, 5.99),
+    ('dziady cz. 2', 'mickiewicz', 10, 5.99),
+    ('dziady cz. 3', 'mickiewicz', 10, 5.99),
+    ('dziady cz. 4', 'mickiewicz', 10, 5.99);
 
-
-DELETE FROM Users WHERE username = 'nednik';
+DELETE FROM Users
+WHERE
+    username = 'nednik';

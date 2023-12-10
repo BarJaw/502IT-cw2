@@ -4,6 +4,7 @@ from user import User
 from colors import red_text, green_text, blue_text
 from getpass import getpass
 from prettytable import PrettyTable
+from book import Book
 
 
 class Customer(User):
@@ -61,13 +62,6 @@ class Customer(User):
             print(red_text('Something went wrong. Please try again.'))
         con.close()
 
-    @staticmethod
-    def view_book(book):  # method to display information of the book
-        print(f"Name: {book.name}",
-              f"Author: {book.author}",
-              f"Price: {book.price}",
-              f"Stock quantity: {book.stock_quantity}")
-
     def add_to_cart(self, book, quantity):
         if book in book.all_books:  # 'book.all_books' is a placeholder for database with books
             if quantity > 0:
@@ -109,22 +103,23 @@ class Customer(User):
         else:
             print("Your cart is empty")
 
-    def search_book(self):
+    @staticmethod
+    def search_book():
         # Ask user for a book name
         book_name = input(blue_text('Please provide the book name: '))
-        
+
         # Connect to database and get all books which have user input in the name field
         con = sqlite3.connect("db/Bookstore.db")  # connect to db
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute(f"SELECT * FROM Books WHERE name LIKE '%{book_name}%'")
-        
+        cur.execute(f"SELECT * FROM Books WHERE name LIKE '%{book_name}%';")
+
         # Get column names
         column_names = [description[0] for description in cur.description]
-        
+
         # Display the results in a table
         table = PrettyTable(column_names)
         table.align = 'l'
-        for row in cur.fetchall():
+        for row in cur.fetchall(): # MAYBE APPLY SORTING HERE
             table.add_row(row)
         print(table)
