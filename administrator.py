@@ -4,7 +4,8 @@ from user import User
 
 class Administrator(User):
     def __init__(self, fname, lname):
-        super().__init__(fname, lname)
+        self.fname = fname
+        self.lname = lname
     
     @staticmethod
     def view_employees():
@@ -24,7 +25,7 @@ class Administrator(User):
         conn.close()
     
     @staticmethod
-    def add_employee(fname: str, lname: str, login: str, password: str):
+    def add_employee(fname: str, lname: str, username: str, password: str):
         # Connect to database
         conn = sqlite3.connect('Bookstore.db')
         # Create a cursor
@@ -33,7 +34,10 @@ class Administrator(User):
         role = "employee"
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-        cursor.execute("INSERT INTO Users VALUES (?, ?, ?, ?, ?)", (fname, lname, login, hashed_password, role))
+        if Administrator.check_if_username_exists(username) == False:
+            cursor.execute("INSERT INTO Users VALUES (?, ?, ?, ?, ?)", (fname, lname, username, hashed_password, role))
+        else:
+            print("This username is taken")
 
         # Commit the changes
         conn.commit()
@@ -41,15 +45,31 @@ class Administrator(User):
         conn.close()
 
     @staticmethod
-    def remove_employee(login: str):
+    def remove_employee(username: str):
         # Connect to database
         conn = sqlite3.connect('Bookstore.db')
         # Create a cursor
         cursor = conn.cursor()
 
-        cursor.execute("DELETE FROM Users WHERE login = (?)", login)
+        if Administrator.check_if_username_exists(username):
+            cursor.execute("DELETE FROM Users WHERE login = (?)", username)
 
         # Commit the changes
         conn.commit()
         # Close our connection
         conn.close()
+
+    @staticmethod
+    def check_if_username_exists(username: str):
+        # Connect to database
+        conn = sqlite3.connect('Bookstore.db')
+        # Create a cursor
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT username FROM Users WHERE username = (?)", username)
+        username_check = cursor.fetchall()
+
+        if len(username_check) == 0:
+            return False
+        else:
+            return True
