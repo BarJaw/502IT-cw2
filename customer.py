@@ -3,8 +3,8 @@ from user import User
 class Customer(User):
     role = "customer"
 
-    def __init__(self, fname, lname):
-        super().__init__(fname, lname)
+    def __init__(self, User):
+        super().__init__(User.fname, User.lname, User.username, self.role)
         self.cart = {}  # initializes dictionary for the cart, {book : stock_quantity}
 
     @staticmethod

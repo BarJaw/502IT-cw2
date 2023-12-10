@@ -17,8 +17,8 @@ class System():
     @staticmethod
     def get_credentials() -> dict:
         creds = {
-            'username': input('Username: ').encode('utf-8'),
-            'password': input('Password: ').encode('utf-8')
+            'username': input('Username: '),
+            'password': input('Password: ')
         }
         return creds
     
@@ -27,9 +27,20 @@ class System():
         print("\n1. Login\n2. Register\n3. Exit")
         choice = input(blue_text("Choose an option: "))
         match choice:
-            case "1":  # Logging in process
+            case "1":
                 credentials = System.get_credentials()
-                User.login(credentials)
+                user = User.login(credentials)
+                match user.role:
+                    case 'customer':
+                        user = Customer(user)
+                        print('Logged in as customer!')
+                        return user
+                    case 'employee':
+                        ...
+                        # user = Employee(user)
+                    case 'administrator':
+                        ...
+                        # user = Administrator(user)
             case "2":
                 ...
                 return Customer.register()
