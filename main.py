@@ -11,8 +11,9 @@ import bcrypt
 class System():
     @staticmethod
     def main():
-        while True:
-            System.view_initial_menu()
+        user = None
+        while not user:
+            user = System.view_initial_menu()
 
     @staticmethod
     def get_credentials() -> dict:
@@ -30,17 +31,18 @@ class System():
             case "1":
                 credentials = System.get_credentials()
                 user = User.login(credentials)
-                match user.role:
-                    case 'customer':
-                        user = Customer(user)
-                        print('Logged in as customer!')
-                        return user
-                    case 'employee':
-                        ...
-                        # user = Employee(user)
-                    case 'administrator':
-                        ...
-                        # user = Administrator(user)
+                if user:
+                    match user.role:
+                        case 'customer':
+                            user = Customer(user)
+                            print(f'Logged in as {user.username}!')
+                            return user
+                        case 'employee':
+                            ...
+                            # user = Employee(user)
+                        case 'administrator':
+                            ...
+                            # user = Administrator(user)
             case "2":
                 ...
                 return Customer.register()
