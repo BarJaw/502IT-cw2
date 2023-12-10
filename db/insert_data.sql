@@ -18,3 +18,6 @@ INSERT INTO
     Books (name, author, stock, price)
 VALUES
     ('dziady', 'mickiewicz', 10, 5.99);
+
+
+DELETE FROM Users WHERE username = 'nednik';

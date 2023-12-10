@@ -3,7 +3,7 @@ from order import Order
 from book import Book
 from user import User
 from colors import blue_text, green_text, red_text
-
+from getpass import getpass
 import sqlite3
 import bcrypt
 
@@ -19,9 +19,10 @@ class System():
     def get_credentials() -> dict:
         creds = {
             'username': input('Username: '),
-            'password': input('Password: ')
+            'password': getpass('Password: ')
         }
         return creds
+    
     
     @staticmethod
     def view_initial_menu():
@@ -35,7 +36,7 @@ class System():
                     match user.role:
                         case 'customer':
                             user = Customer(user)
-                            print(f'Logged in as {user.username}!')
+                            print(green_text(f'Logged in as {user.username}!'))
                             return user
                         case 'employee':
                             ...
@@ -44,8 +45,7 @@ class System():
                             ...
                             # user = Administrator(user)
             case "2":
-                ...
-                return Customer.register()
+                Customer.register()
             case "3":
                 exit(1)
             case _:

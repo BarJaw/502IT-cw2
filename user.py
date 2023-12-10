@@ -1,3 +1,4 @@
+from colors import green_text, red_text, blue_text
 import sqlite3
 import bcrypt
 
@@ -17,18 +18,11 @@ class User:
         cur = con.cursor()
         row = cur.execute(
             f"SELECT * FROM users WHERE username LIKE \"{credentials.get('username')}\";").fetchone()
+        con.close()
         if row and bcrypt.checkpw(
                 credentials['password'].encode('utf-8'),
                 row['password_hash'].encode('utf-8')
             ):
             return User(row['fname'], row['lname'], row['username'], row['role'])     
         else:
-            print('User or password is incorrect')
-        # with open('db/create_tables.sql') as f:
-        #     sql_file = f.read()
-
-        # con = sqlite3.connect("db/Bookstore.db")
-        # cur = con.cursor()
-        # res = cur.executescript(sql_file)
-        # con.commit()
-        # con.close()
+            print(red_text('User or password is incorrect'))
