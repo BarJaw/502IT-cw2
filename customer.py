@@ -3,18 +3,19 @@ import bcrypt
 from user import User
 from colors import red_text, green_text, blue_text
 from getpass import getpass
+from prettytable import PrettyTable
 
 
 class Customer(User):
-    role = "customer"
-
     def __init__(self, User):
-        super().__init__(User.fname, User.lname, User.username, self.role)
+        super().__init__(User.fname, User.lname, User.username, role='customer')
         self.cart = {}  # initializes dictionary for the cart, {book : stock_quantity}
 
     @staticmethod
     def register():
         print('Please provide the following information.')
+
+        # Get user and compare with database
         username = None
         while not username:
             username = input('Username: ')
@@ -30,6 +31,7 @@ class Customer(User):
                 print(red_text('Such username already exists. Please choose another.'))
                 username = None
 
+        # Check if the password hash matches
         password = getpass('Password: ')
         while not password:
             print(red_text('Please provide password'))
@@ -37,16 +39,19 @@ class Customer(User):
         password = bcrypt.hashpw(password.encode(
             'utf-8'), bcrypt.gensalt()).decode("utf-8")
 
+        # Get the first name
         fname = input('First name: ').capitalize()
         while not fname:
             print(red_text('Please provide your name'))
             fname = input('First name: ').capitalize()
 
+        # Get the last name
         lname = input('Last name: ').capitalize()
         while not lname:
             print(red_text('Please provide your last name'))
             lname = input('Last name: ').capitalize()
 
+        # Insert gathered data into database
         try:
             cur.execute(f"INSERT INTO Users (fname, lname, username, password_hash, role)\
                 VALUES ('{fname}', '{lname}', '{username}', '{password}', 'customer');")
@@ -103,3 +108,23 @@ class Customer(User):
             self.cart.clear()
         else:
             print("Your cart is empty")
+
+    def search_book(self):
+        # Ask user for a book name
+        book_name = input(blue_text('Please provide the book name: '))
+        
+        # Connect to database and get all books which have user input in the name field
+        con = sqlite3.connect("db/Bookstore.db")  # connect to db
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute(f"SELECT * FROM Books WHERE name LIKE '%{book_name}%'")
+        
+        # Get column names
+        column_names = [description[0] for description in cur.description]
+        
+        # Display the results in a table
+        table = PrettyTable(column_names)
+        table.align = 'l'
+        for row in cur.fetchall():
+            table.add_row(row)
+        print(table)
