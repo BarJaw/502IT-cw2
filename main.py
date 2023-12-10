@@ -1,3 +1,4 @@
+from banner import banner
 from customer import Customer
 from employee import Employee
 from administrator import Administrator
@@ -13,7 +14,8 @@ import bcrypt
 class System():
     @staticmethod
     def main():
-        user = User('Bartosz', 'Jaworski', 'barjaw', 'employee')
+        banner()
+        user = None # User('Bartosz', 'Jaworski', 'barjaw', 'employee')
         while not user:
             user = System.view_initial_menu()
 
@@ -100,7 +102,7 @@ class System():
             case '2':
                 Employee.add_book()
             case '3':
-                ...
+                Employee.remove_book()
             case '4':
                 ...
             case '5':

@@ -80,10 +80,28 @@ class Employee(User):
             print(red_text('Something went wrong. Please try again.'))
             print(e)
 
-    def remove_book(self, book_id):
-        # Add code to remove a book from the database
-        # You can use the book's ID to identify and delete the book
-        print(f"Removing book with ID: {book_id}")
+    @staticmethod
+    def remove_book():
+        con = sqlite3.connect("db/Bookstore.db")
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        
+        print('Please provide the book title you want to delete: ')
+        book_name = input(blue_text('Book title: '))
+        while not book_name:
+            print(red_text('Book title you provided is incorrect. Please try again.'))
+            book_name = input(blue_text('Book title: '))
+        
+        if cur.execute("SELECT name FROM Books WHERE name = (?)", (book_name,)).fetchone() is not None:
+            cur.execute("DELETE FROM Books WHERE name = ?", (book_name,))
+            con.commit()
+            con.close()
+            print(green_text('Book deleted successfully.'))
+        else:
+            print(red_text('Book with such title does not exists.'))
+        
+        
+        
 
     def view_orders(self):
         # Add code to retrieve and display a list of orders
