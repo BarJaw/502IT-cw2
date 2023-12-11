@@ -1,4 +1,5 @@
 import sqlite3
+import math
 import bcrypt
 from datetime import datetime, timedelta
 from user import User
@@ -115,9 +116,6 @@ class Customer(User):
             print("Your cart is empty")
 
     def check_out_cart(self):
-        priority = "high"
-        status = "in progress"
-
         if self.cart:
             # Connect to database
             conn = sqlite3.connect('db/Bookstore')
@@ -135,13 +133,24 @@ class Customer(User):
                 shipment_time = cursor.execute(f"SELECT shipment_time FROM Cities WHERE city = {city}").fetchone() # get the shipment time from database
                 estimated_date_of_arrival = order_date + timedelta(days=shipment_time) # calculate the estimated date of arrival
 
+                # calculate priority based on total amount
+                if total_amount >= 100:
+                    priority = 10
+                elif total_amount < 10:
+                    priority = 1
+                else:
+                    priority = math.floor(total_amount / 10)
+                
+                # status of an order
+                status = "in progress"
+
                 my_id = cursor.execute(f"SELECT id FROM Users WHERE username = {self.username}").fetchone() # get id of the user based on his username
 
-                amount = self.calculate_total_amount()
-
+                total_amount = self.calculate_total_amount()
+                
                 # Add the order into the database
                 cursor.execute("INSERT INTO Orders VALUES (?, ?, ?, ?, ?, ?)",
-                            (order_date, priority, status, address, estimated_date_of_arrival, amount, self.cart, my_id))
+                            (order_date, priority, status, address, estimated_date_of_arrival, total_amount, self.cart, my_id))
 
                 # Subtract the stock quantity of the checked out books
                 for position in self.cart:  # iterate through the cart
@@ -175,17 +184,17 @@ class Customer(User):
         book_name = input(blue_text('Please provide the book name: '))
 
         # Connect to database and get all books which have user input in the name field
-        con = sqlite3.connect("db/Bookstore.db")  # connect to db
-        con.row_factory = sqlite3.Row
-        cur = con.cursor()
-        cur.execute(f"SELECT * FROM Books WHERE name LIKE '%{book_name}%';")
+        conn = sqlite3.connect("db/Bookstore.db")  # connect to db
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT * FROM Books WHERE name LIKE '%{book_name}%';")
 
         # Get column names
-        column_names = [description[0] for description in cur.description]
+        column_names = [description[0] for description in cursor.description]
 
         # Display the results in a table
         table = PrettyTable(column_names)
         table.align = 'l'
-        for row in cur.fetchall():  # MAYBE APPLY SORTING HERE
+        for row in cursor.fetchall():  # MAYBE APPLY SORTING HERE
             table.add_row(row)
         print(table)
