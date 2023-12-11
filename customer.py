@@ -1,15 +1,19 @@
 import sqlite3
+import math
 import bcrypt
+from datetime import datetime, timedelta
 from user import User
 from colors import red_text, green_text, blue_text
 from getpass import getpass
 from prettytable import PrettyTable
+from book import Book
 
 
 class Customer(User):
     def __init__(self, User):
         super().__init__(User.fname, User.lname, User.username, role='customer')
-        self.cart = {}  # initializes dictionary for the cart, {book : stock_quantity}
+        # initializes list of dictionaries for the cart, [{book : stock_quantity}]
+        self.cart = []
 
     @staticmethod
     def register():
@@ -61,25 +65,25 @@ class Customer(User):
             print(red_text('Something went wrong. Please try again.'))
         con.close()
 
-    @staticmethod
-    def view_book(book):  # method to display information of the book
-        print(f"Name: {book.name}",
-              f"Author: {book.author}",
-              f"Price: {book.price}",
-              f"Stock quantity: {book.stock_quantity}")
-
     def add_to_cart(self, book, quantity):
-        if book in book.all_books:  # 'book.all_books' is a placeholder for database with books
+        # Connect to database
+        conn = sqlite3.connect('db/Bookstore')
+        # Create a cursor
+        cursor = conn.cursor()
+
+        book_quantity = cursor.execute("SELECT stock FROM Books WHERE name = (?)", book).fetchone()
+
+        if book in cursor.execute("SELECT name FROM Books WHERE name = (?)", book).fetchall():
             if quantity > 0:
-                if len(book.stock_quantity) != 0:
-                    if book.stock_quantity >= quantity:  # check if the requested amount of books is available and it is more 0
+                if len(book_quantity) != 0:
+                    if book_quantity >= quantity:  # check if the requested amount of books is available and it is more 0
                         if book not in self.cart:  # check if the book hasn't been added to the cart before
-                            # could be 'book.name' instead of book object
-                            self.cart.update({book: quantity})
-                            book.stock_quantity -= quantity
+                            self.cart.append({book: quantity})
                         else:
-                            # if the book is already in the cart, update its quantity
-                            self.cart[book] += quantity
+                            for position in self.cart:
+                                for book_obj in position:
+                                    if book_obj == book:
+                                        position[book] += quantity
                     else:
                         print("Requested amount is more than left in stock")
                 else:
@@ -89,42 +93,109 @@ class Customer(User):
         else:
             print("No such book in the store")
 
-    def view_cart(self):
+        # Close the connection
+        cursor.close()
+
+    def calculate_total_amount(self):
         total_amount = 0
+        for position in self.cart:
+            for book, quantity in position.items():
+                total_amount += book.price * quantity
+        return total_amount
+
+    def view_cart(self):
+        print("---- My Cart ----")
+
         if self.cart:
-            print("---- My Cart ----")
-            for book, quantity in self.cart.items():
-                print(f"{book}: {quantity}")
-            for book in self.cart:
-                total_amount += book.price
-            print(f"Total amount: {total_amount} EUR")
+            for position in self.cart:
+                for book, quantity in position.items():
+                    print(f"{book.name}: {quantity}")
+            total_amount = self.calculate_total_amount()
+            print(f"Total amount: {total_amount:.2f} EUR")
         else:
             print("Your cart is empty")
 
-    # method to check out the cart, but we should also add method to modify the cart (e.g. delete items or their quantity)
     def check_out_cart(self):
         if self.cart:
-            print("Successfully checked out")
-            self.cart.clear()
+            # Connect to database
+            conn = sqlite3.connect('db/Bookstore')
+            # Create a cursor
+            cursor = conn.cursor()
+
+            city = input("Please provide the city of the delivery: ").capitalize()
+
+            if city in cursor.execute(f"SELECT city FROM Cities WHERE city = {city}").fetchall(): # if such city exists
+                street = input("Please provide the street of the delivery: ") # street input
+                address = f"City: {city}, Street: {street}" # concatenate city and street into one variable
+
+                order_date_str = datetime.now().strftime("%d.%m.%Y") # current date as a string
+                order_date = datetime.strptime(order_date_str, "%d.%m.%Y") # convert current date into a date object
+                shipment_time = cursor.execute(f"SELECT shipment_time FROM Cities WHERE city = {city}").fetchone() # get the shipment time from database
+                estimated_date_of_arrival = order_date + timedelta(days=shipment_time) # calculate the estimated date of arrival
+
+                # calculate priority based on total amount
+                if total_amount >= 100:
+                    priority = 10
+                elif total_amount < 10:
+                    priority = 1
+                else:
+                    priority = math.floor(total_amount / 10)
+                
+                # status of an order
+                status = "in progress"
+
+                my_id = cursor.execute(f"SELECT id FROM Users WHERE username = {self.username}").fetchone() # get id of the user based on his username
+
+                total_amount = self.calculate_total_amount()
+                
+                # Add the order into the database
+                cursor.execute("INSERT INTO Orders VALUES (?, ?, ?, ?, ?, ?)",
+                            (order_date, priority, status, address, estimated_date_of_arrival, total_amount, self.cart, my_id))
+
+                # Subtract the stock quantity of the checked out books
+                for position in self.cart:  # iterate through the cart
+                    for book, quantity in position.items():
+                        current_stock = cursor.execute(f"SELECT stock FROM Books WHERE name = {book.name}").fetchone() # current stock of the book
+                        updated_stock = current_stock - quantity # updated stock number
+                        cursor.executemany(f"UPDATE Books SET stock = {updated_stock} WHERE name = {book.name}") # update the stock of the book
+
+                # Commit the changes to the database
+                conn.commit()
+                # Close the connection
+                conn.close()
+
+                print("Successfully checked out")
+                self.cart.clear()
+            else:
+                print("Please provide the valid city name, here is the list of similar cities:")
+                similar_cities = cursor.execute(f"SELECT city WHERE city LIKE '%{city}%'").fetchall()
+                for city in similar_cities:
+                    print(city)
+                self.check_out_cart()
+
+                # Close the connection
+                conn.close()
         else:
             print("Your cart is empty")
 
-    def search_book(self):
+    @staticmethod
+    def search_book():
         # Ask user for a book name
         book_name = input(blue_text('Please provide the book name: '))
-        
+
         # Connect to database and get all books which have user input in the name field
         con = sqlite3.connect("db/Bookstore.db")  # connect to db
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute(f"SELECT * FROM Books WHERE name LIKE '%{book_name}%'")
-        
+        cur.execute("SELECT * FROM Books WHERE name LIKE ? ORDER BY RANDOM();", (f'%{book_name}%',))
+
+
         # Get column names
-        column_names = [description[0] for description in cur.description]
-        
+        column_names = [description[0] for description in cursor.description]
+
         # Display the results in a table
         table = PrettyTable(column_names)
         table.align = 'l'
-        for row in cur.fetchall():
+        for row in cursor.fetchall():  # MAYBE APPLY SORTING HERE
             table.add_row(row)
         print(table)
