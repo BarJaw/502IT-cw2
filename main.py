@@ -104,9 +104,9 @@ class System():
             case '3':
                 Employee.remove_book()
             case '4':
-                ...
+                Employee.view_orders()
             case '5':
-                ...
+                Employee.accept_order()
             case '6':
                 ...
             case '7':
