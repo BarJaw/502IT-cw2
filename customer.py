@@ -92,6 +92,8 @@ class Customer(User):
         else:
             print("No such book in the store")
 
+        cursor.close()
+
     def calculate_total_amount(self):
         total_amount = 0
         for position in self.cart:
