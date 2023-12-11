@@ -70,8 +70,7 @@ class Customer(User):
         # Create a cursor
         cursor = conn.cursor()
 
-        book_quantity = cursor.execute(
-            "SELECT stock FROM Books WHERE name = (?)", book).fetchone()
+        book_quantity = cursor.execute("SELECT stock FROM Books WHERE name = (?)", book).fetchone()
 
         if book in cursor.execute("SELECT name FROM Books WHERE name = (?)", book).fetchall():
             if quantity > 0:
@@ -137,8 +136,16 @@ class Customer(User):
 
                 amount = self.calculate_total_amount()
 
+                # Add the order into the database
                 cursor.execute("INSERT INTO Orders VALUES (?, ?, ?, ?, ?, ?)",
                             (order_date, priority, status, address, estimated_date_of_arrival, amount, self.cart, my_id))
+
+                # Subtract the stock quantity of the checked out books
+                for position in self.cart:  # iterate through the cart
+                    for book, quantity in position.items():
+                        current_stock = cursor.execute(f"SELECT stock FROM Books WHERE name = {book.name}").fetchone() # current stock of the book
+                        updated_stock = current_stock - quantity # updated stock number
+                        cursor.executemany(f"UPDATE Books SET stock = {updated_stock} WHERE name = {book.name}") # update the stock of the book
 
                 # Commit the changes to the database
                 conn.commit()
@@ -149,7 +156,7 @@ class Customer(User):
                 self.cart.clear()
             else:
                 print("Please provide the valid city name, here is the list of similar cities:")
-                similar_cities = cursor.execute("SELECT city WHERE city LIKE '%(?)%'", city).fetchall()
+                similar_cities = cursor.execute(f"SELECT city WHERE city LIKE '%{city}%'").fetchall()
                 for city in similar_cities:
                     print(city)
                 self.check_out_cart()
