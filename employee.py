@@ -122,6 +122,7 @@ class Employee(User):
     
     @staticmethod
     def accept_order():
+        # ALSO ADD EXCEPTIONS (check if order is waiting for acceptance and only modify those, otherwise spit an error)
         con = sqlite3.connect("db/Bookstore.db")
         con.row_factory = sqlite3.Row
         cur = con.cursor()
@@ -134,6 +135,4 @@ class Employee(User):
         con.commit()
         con.close()
     def cancel_order(self, order_id):
-        # Add code to cancel an order
-        # You can use the order's ID to identify and update the order status
-        print(f"Cancelling order with ID: {order_id}")
+        
