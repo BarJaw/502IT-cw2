@@ -1,7 +1,5 @@
 # Bookstore Project
 
-***
-
 ## Description
 
 The Bookstore project is a simple command-line application for managing a bookstore. It allows users to log in as customers, employees, or administrators, perform various tasks such as searching for books, viewing details, adding books to the cart, checking out, managing book inventory, handling orders, and administering employee accounts.
@@ -43,6 +41,8 @@ The Bookstore project is a simple command-line application for managing a bookst
 
    ```bash 
    pip install prettytable
+   pip install bcrypt
+   pip install sqlite3
    ```
 
 3. Run the Application:
