@@ -127,12 +127,25 @@ class Employee(User):
         con.row_factory = sqlite3.Row
         cur = con.cursor()
         
-        print('Plese provide the order id you want to accept.')
+        print('Please provide the order id you want to accept.')
         order_id = input(blue_text('Order id: '))
-
-        cur.execute(f"UPDATE Orders SET status = 'accepted' WHERE id = {order_id};")
+        while not order_id or not order_id.isdecimal():
+            print(red_text('Order id you provided is incorrect. Please try again.'))
+            order_id = input(blue_text('Order id: '))
+        
+        if cur.execute(f"SELECT id, status FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
+            print(red_text('Order with such id does not exist.'))
+        
+        else:
+            try:
+                cur.execute("UPDATE Orders SET status = 'accepted' WHERE id = ?;", (order_id))
+                print(green_text('The order has been accepted.'))
+            except:
+                print(red_text('Something went wrong. Please try again.'))
         
         con.commit()
         con.close()
-    def cancel_order(self, order_id):
+    
+    @staticmethod
+    def cancel_order():
         ...

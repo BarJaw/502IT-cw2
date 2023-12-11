@@ -10,12 +10,14 @@ VALUES
     );
 
 INSERT INTO
-    Orders (date, priority, status, amount, book_list, user_id)
+    Orders (date, priority, status, address, estimated_date_of_arrival,amount, book_list, user_id)
 VALUES
     (
         '07.12.2023',
         'high',
         'waiting for acceptance',
+        'Wroclaw, aaa',
+        '12.12.2023',
         10.99,
         '{"dziady": 1}',
         1
