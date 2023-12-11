@@ -42,5 +42,5 @@ employee.add_book(new_book="New Book")
 employee.remove_book(book_id="book_to_remove")
 employee.view_orders()
 # Assuming you have an Order object to pass to accept_order method
-employee.accept_order(order=order_to_accept)
+employee.accept_order(order="order_to_accept")
 employee.cancel_order(order_id="order_to_cancel")
