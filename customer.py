@@ -177,7 +177,7 @@ class Customer(User):
         con = sqlite3.connect("db/Bookstore.db")  # connect to db
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("SELECT * FROM Books WHERE name LIKE ?", (f'%{book_name}%',))
+        cur.execute("SELECT * FROM Books WHERE name LIKE ? ORDER BY RANDOM();", (f'%{book_name}%',))
 
 
         # Get column names
