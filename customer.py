@@ -184,10 +184,11 @@ class Customer(User):
         book_name = input(blue_text('Please provide the book name: '))
 
         # Connect to database and get all books which have user input in the name field
-        conn = sqlite3.connect("db/Bookstore.db")  # connect to db
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute(f"SELECT * FROM Books WHERE name LIKE '%{book_name}%';")
+        con = sqlite3.connect("db/Bookstore.db")  # connect to db
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("SELECT * FROM Books WHERE name LIKE ? ORDER BY RANDOM();", (f'%{book_name}%',))
+
 
         # Get column names
         column_names = [description[0] for description in cursor.description]
