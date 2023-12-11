@@ -11,7 +11,7 @@ from book import Book
 class Customer(User):
     def __init__(self, User):
         super().__init__(User.fname, User.lname, User.username, role='customer')
-        # initializes dictionary for the cart, {book : stock_quantity}
+        # initializes list of dictionaries for the cart, [{book : stock_quantity}]
         self.cart = []
 
     @staticmethod
@@ -92,6 +92,7 @@ class Customer(User):
         else:
             print("No such book in the store")
 
+        # Close the connection
         cursor.close()
 
     def calculate_total_amount(self):
