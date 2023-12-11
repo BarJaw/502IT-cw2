@@ -46,7 +46,7 @@ class Employee(User):
                 book_name = input('Book title: ').strip()
 
             # This if checks whether the book already exists in the db. If not then inserts the book, else throws an error.
-            if cur.execute("SELECT name FROM Books WHERE name = (?)", (book_name,)).fetchone() is not None:
+            if cur.execute("SELECT name FROM Books WHERE name = (?)", (book_name,)).fetchone() is None:
                 author = input('Author: ')
                 while not author:
                     print(
