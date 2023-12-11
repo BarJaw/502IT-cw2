@@ -42,6 +42,7 @@ class System():
         return creds
 
     @staticmethod
+
     def view_initial_menu():
         print('\n1. Login\n2. Register\n3. Exit')
         choice = input(blue_text('Choose an option: '))
@@ -110,7 +111,7 @@ class System():
             case '6':
                 Employee.cancel_order()
             case '7':
-                exit(1)
+                Customer.view_books_alphabetically()
             case _:
                 print(red_text('Invalid choice. Please choose again'))
 
