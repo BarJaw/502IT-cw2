@@ -15,7 +15,7 @@ class System():
     @staticmethod
     def main():
         banner()
-        user = None  # User('Bartosz', 'Jaworski', 'barjaw', 'employee')
+        user = User('Bartosz', 'Jaworski', 'barjaw', 'employee')
         while not user:
             user = System.view_initial_menu()
 

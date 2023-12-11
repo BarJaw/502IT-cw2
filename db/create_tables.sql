@@ -43,4 +43,9 @@ CREATE TABLE
         price REAL NOT NULL
     );
 
--- Queries to add some testing values to the database
+-- Creates Cities table
+CREATE TABLE IF NOT EXISTS Cities (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    city TEXT NOT NULL,
+    shipment_time INT NOT NULL
+);
