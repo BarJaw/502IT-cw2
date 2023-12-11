@@ -129,12 +129,14 @@ class Employee(User):
         
         print('Please provide the order id you want to accept.')
         order_id = input(blue_text('Order id: '))
-        while not order_id or not order_id.isdecimal():
+        if not order_id or not order_id.isdecimal():
             print(red_text('Order id you provided is incorrect. Please try again.'))
             order_id = input(blue_text('Order id: '))
         
         if cur.execute(f"SELECT id, status FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
             print(red_text('Order with such id does not exist.'))
+        
+        
         
         else:
             try:
