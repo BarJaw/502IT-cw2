@@ -23,7 +23,7 @@ CREATE TABLE
     IF NOT EXISTS Orders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT NOT NULL,
-        priority TEXT NOT NULL,
+        priority INT NOT NULL,
         status TEXT NOT NULL,
         address TEXT NOT NULL,
         estimated_date_of_arrival TEXT NOT NULL,
