@@ -29,6 +29,8 @@ class Employee(User):
         for row in cur.fetchall():
             table.add_row(row)
         print(table)
+        
+        con.close()
 
     @staticmethod
     def add_book():
@@ -46,7 +48,7 @@ class Employee(User):
                 book_name = input('Book title: ').strip()
 
             # This if checks whether the book already exists in the db. If not then inserts the book, else throws an error.
-            if cur.execute("SELECT name FROM Books WHERE name = (?)", (book_name,)).fetchone() is not None:
+            if cur.execute("SELECT name FROM Books WHERE name = (?)", (book_name,)).fetchone() is None:
                 author = input('Author: ')
                 while not author:
                     print(
@@ -100,18 +102,37 @@ class Employee(User):
         else:
             print(red_text('Book with such title does not exists.'))
         
+    @staticmethod
+    def view_orders():
+        con = sqlite3.connect("db/Bookstore.db")
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
         
+        cur.execute(f"SELECT * FROM Orders ORDER BY RANDOM();") # SORTING ALGORITHM
         
+        column_names = [description[0] for description in cur.description]
+        
+        table = PrettyTable(column_names)
+        table.align = 'l'
+        for row in cur.fetchall():
+            table.add_row(row)
+        print(table)
+        
+        con.close()
+    
+    @staticmethod
+    def accept_order():
+        # ALSO ADD EXCEPTIONS (check if order is waiting for acceptance and only modify those, otherwise spit an error)
+        con = sqlite3.connect("db/Bookstore.db")
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        
+        print('Plese provide the order id you want to accept.')
+        order_id = input(blue_text('Order id: '))
 
-    def view_orders(self):
-        # Add code to retrieve and display a list of orders
-        print("Viewing orders...")
-
-    def accept_order(self, order):
-        # Add code to update the order status as accepted
-        print(f"Accepting order: {order}")
-
+        cur.execute(f"UPDATE Orders SET status = 'accepted' WHERE id = {order_id};")
+        
+        con.commit()
+        con.close()
     def cancel_order(self, order_id):
-        # Add code to cancel an order
-        # You can use the order's ID to identify and update the order status
-        print(f"Cancelling order with ID: {order_id}")
+        ...

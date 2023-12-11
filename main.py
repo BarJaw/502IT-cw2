@@ -15,7 +15,7 @@ class System():
     @staticmethod
     def main():
         banner()
-        user = None # User('Bartosz', 'Jaworski', 'barjaw', 'employee')
+        user = None  # User('Bartosz', 'Jaworski', 'barjaw', 'employee')
         while not user:
             user = System.view_initial_menu()
 
@@ -104,15 +104,16 @@ class System():
             case '3':
                 Employee.remove_book()
             case '4':
-                ...
+                Employee.view_orders()
             case '5':
-                ...
+                Employee.accept_order()
             case '6':
-                ...
+                Employee.cancel_order()
             case '7':
                 exit(1)
             case _:
                 print(red_text('Invalid choice. Please choose again'))
-                
+
+
 if __name__ == '__main__':
     System.main()

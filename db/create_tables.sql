@@ -8,8 +8,8 @@ DROP TABLE IF EXISTS Orders;
 DROP TABLE IF EXISTS Books;
 
 -- Creates Users table
-CREATE TABLE IF NOT EXISTS
-    Users (
+CREATE TABLE
+    IF NOT EXISTS Users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fname TEXT NOT NULL,
         lname TEXT NOT NULL,
@@ -19,21 +19,23 @@ CREATE TABLE IF NOT EXISTS
     );
 
 -- Creates Orders table
-CREATE TABLE IF NOT EXISTS
-    Orders (
+CREATE TABLE
+    IF NOT EXISTS Orders (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT NOT NULL,
-        priority TEXT NOT NULL,
+        priority INT NOT NULL,
         status TEXT NOT NULL,
-        amount INTEGER NOT NULL,
+        address TEXT NOT NULL,
+        estimated_date_of_arrival TEXT NOT NULL,
+        amount REAL NOT NULL,
         book_list TEXT NOT NULL,
         user_id INTEGER NOT NULL,
         FOREIGN KEY (user_id) REFERENCES Users (id) -- Relationship Users 1..* Orders
     );
 
 -- Creates Books table
-CREATE TABLE IF NOT EXISTS
-    Books (
+CREATE TABLE
+    IF NOT EXISTS Books (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         author TEXT NOT NULL,
@@ -42,4 +44,3 @@ CREATE TABLE IF NOT EXISTS
     );
 
 -- Queries to add some testing values to the database
-
