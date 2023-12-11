@@ -108,7 +108,7 @@ class System():
             case '5':
                 Employee.accept_order()
             case '6':
-                ...
+                Employee.cancel_order()
             case '7':
                 exit(1)
             case _:
