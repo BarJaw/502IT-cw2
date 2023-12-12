@@ -84,6 +84,11 @@ class Customer(User):
                                 for book_name in position:
                                     if book_name == book:
                                         position[book] += quantity
+                                        if position[book] > book_quantity:
+                                            position[book] -= quantity
+                                            print("The amount exceeds book's stock value")
+                                        else:
+                                            print("Successfully appended")
                     else:
                         print("Requested amount is more than left in stock")
                 else:
