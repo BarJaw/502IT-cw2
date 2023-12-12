@@ -72,15 +72,18 @@ class Customer(User):
         cursor = conn.cursor()
 
         book = input("Input the name of the book: ")
-        quantity = int(input("Input the quantity"))
+        quantity = int(input("Input the quantity: "))
         book_quantity = cursor.execute("SELECT stock FROM Books WHERE name = ?", (book,)).fetchone()[0]
-        print(book_quantity)
         if book in cursor.execute("SELECT name FROM Books WHERE name = ?", (book,)).fetchone():
             if quantity > 0:
                 if book_quantity:
-                    if book_quantity >= quantity:  # check if the requested amount of books is available and it is more 0
-                        if book not in self.cart:  # check if the book hasn't been added to the cart before
+                    if book_quantity >= quantity:
+                        book_titles = []
+                        for position in self.cart:
+                            book_titles.extend(list(position.keys()))
+                        if book not in book_titles:
                             self.cart.append({book: quantity})
+                            print("Successfully appended")
                         else:
                             for position in self.cart:
                                 for book_name in position:
