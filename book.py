@@ -6,5 +6,6 @@ class Book:
         self.stock = stock
         self.price = price
 
-    def edit_quantity(self, new_quantity):
-        self.stock = new_quantity
+    def edit_quantity(self, quantity_change):
+        # Adjust the stock by adding the quantity_change
+        self.stock += quantity_change
