@@ -65,12 +65,14 @@ class Customer(User):
             print(red_text('Something went wrong. Please try again.'))
         con.close()
 
-    def add_to_cart(self, book, quantity):
+    def add_to_cart(self):
         # Connect to database
         conn = sqlite3.connect('db/Bookstore')
         # Create a cursor
         cursor = conn.cursor()
 
+        book = input("Input the name of the book: ")
+        quantity = int(input("Input the quantity"))
         book_quantity = cursor.execute("SELECT stock FROM Books WHERE name = (?)", book).fetchone()
 
         if book in cursor.execute("SELECT name FROM Books WHERE name = (?)", book).fetchall():
