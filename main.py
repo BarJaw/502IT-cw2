@@ -20,7 +20,7 @@ class System():
             user = System.view_initial_menu()
         if user.role == 'customer':
             while True:
-                System.view_customer_menu()
+                System.view_customer_menu(customer)
         elif user.role == 'employee':
             while True:
                 System.view_employee_menu()
@@ -66,18 +66,18 @@ class System():
                 print(red_text('Invalid choice. Please choose again'))
 
     @staticmethod
-    def view_customer_menu():
-        print('1. Search for a book\n2. Add book to cart\n3. Checkout \n4. View account details \n5. Change account details\n6. Exit \n')
+    def view_customer_menu(customer):
+        print('1. Search for a book\n2. Add book to cart\n3. View cart\n4. Checkout\n5. ... \n6. ...\n7. Exit \n')
         choice = input(blue_text('Choose an option: '))
         match choice:
             case '1':
-                Customer.search_book()
+                customer.search_book()
             case '2':
-                Customer.add_to_cart()
+                customer.add_to_cart()
             case '3':
-                Customer.check_out_cart()
+                customer.view_cart()
             case '4':
-                Customer.view_account_details()
+                customer.check_out_cart()
             case '5':
                 Customer.change_account_details()
             case '6':

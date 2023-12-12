@@ -10,7 +10,16 @@ VALUES
     );
 
 INSERT INTO
-    Orders (date, priority, status, address, estimated_date_of_arrival,amount, book_list, user_id)
+    Orders (
+        date,
+        priority,
+        status,
+        address,
+        estimated_date_of_arrival,
+        amount,
+        book_list,
+        user_id
+    )
 VALUES
     (
         '07.12.2023',
@@ -34,3 +43,31 @@ VALUES
 DELETE FROM Users
 WHERE
     username = 'nednik';
+
+INSERT INTO
+    Cities (city, shipment_time)
+VALUES
+    ('Warszawa', 2),
+    ('Kraków', 1),
+    ('Łódź', 3),
+    ('Wrocław', 2),
+    ('Poznań', 1),
+    ('Gdańsk', 3),
+    ('Szczecin', 1),
+    ('Bydgoszcz', 2),
+    ('Lublin', 3),
+    ('Białystok', 1),
+    ('Katowice', 2),
+    ('Gdynia', 3),
+    ('Częstochowa', 1),
+    ('Radom', 2),
+    ('Sosnowiec', 3),
+    ('Toruń', 1),
+    ('Kielce', 2),
+    ('Rzeszów', 3),
+    ('Gliwice', 1),
+    ('Zabrze', 2),
+    ('Olsztyn', 3),
+    ('Bielsko-Biała', 1),
+    ('Bytom', 2),
+    ('Zielona Góra', 3)
