@@ -15,16 +15,16 @@ class System():
         while not user:
             user = System.view_initial_menu()
         if user.role == 'customer':
+            customer = Customer(user)
             while True:
-                customer = Customer(user)
                 System.view_customer_menu(customer)
         elif user.role == 'employee':
+            employee = Employee(user)
             while True:
-                employee = Employee(user)
                 System.view_employee_menu()
         elif user.role == 'administrator':
+            administrator = Administrator(user)
             while True:
-                administrator = Administrator(user)
                 System.view_administrator_menu()
 
     @staticmethod
