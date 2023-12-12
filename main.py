@@ -84,7 +84,7 @@ class System():
             case '4':
                 Customer.check_out_cart()
             case '5':
-                ...
+                customer.view_cart()
             case '6':
                 ...
             case '7':

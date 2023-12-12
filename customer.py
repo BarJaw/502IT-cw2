@@ -108,15 +108,14 @@ class Customer(User):
 
     def calculate_total_amount(self):
         # Connect to database
-        conn = sqlite3.connect('db/Bookstore')
+        conn = sqlite3.connect('db/Bookstore.db')
         # Create a cursor
         cursor = conn.cursor()
 
         total_amount = 0
         for position in self.cart:
             for book, quantity in position.items():
-
-                book_price = cursor.execute(f"SELECT price WHERE book = {book}").fetchone()
+                book_price = cursor.execute("SELECT price FROM Books WHERE name = ?;", (book,)).fetchone()[0]
                 total_amount += book_price * quantity
                 
                 # Close the connection
