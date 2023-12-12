@@ -15,7 +15,7 @@ class System():
     @staticmethod
     def main():
         banner()
-        user = User('Bartosz', 'Jaworski', 'barjaw', 'employee')
+        user = User('Bartosz', 'Jaworski', 'barjaw', 'administrator')
         while not user:
             user = System.view_initial_menu()
 
@@ -30,8 +30,7 @@ class System():
         elif user.role == 'administrator':
             administrator = Administrator(user)
             while True:
-                pass
-                # System.view_administrator_menu()
+                System.view_administrator_menu()
 
     @staticmethod
     def get_credentials() -> dict:
@@ -113,7 +112,22 @@ class System():
                 exit(1)
             case _:
                 print(red_text('Invalid choice. Please choose again'))
-
+    
+    @staticmethod
+    def view_administrator_menu():
+        print('1. View employees\n2. Add employee\n3. Remove employee\n4. Exit\n')
+        choice = input(blue_text('Choose an option: '))
+        match choice:
+            case '1':
+                Administrator.view_employees()
+            case '2':
+                Administrator.add_employee()
+            case '3':
+                Administrator.remove_employee()
+            case '4':
+                exit(1)
+            case _:
+                print(red_text('Invalid choice. Please choose again'))
 
 if __name__ == '__main__':
     System.main()
