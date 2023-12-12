@@ -18,17 +18,13 @@ class System():
         user = None # User('Bartosz', 'Jaworski', 'barjaw', 'administrator')
         while not user:
             user = System.view_initial_menu()
-
         if user.role == 'customer':
-            customer = Customer(user)
             while True:
                 System.view_customer_menu()
         elif user.role == 'employee':
-            employee = Employee(user)
             while True:
                 System.view_employee_menu()
         elif user.role == 'administrator':
-            administrator = Administrator(user)
             while True:
                 System.view_administrator_menu()
 
@@ -87,7 +83,7 @@ class System():
             case '6':
                 ...
             case '7':
-                System.view_initial_menu()
+                exit(1)
             case _:
                 print(red_text('Invalid choice. Please choose again'))
 
@@ -109,7 +105,7 @@ class System():
             case '6':
                 Employee.cancel_order()
             case '7':
-                System.view_initial_menu()
+                exit(1)
             case _:
                 print(red_text('Invalid choice. Please choose again'))
     
@@ -125,7 +121,7 @@ class System():
             case '3':
                 Administrator.remove_employee()
             case '4':
-                System.view_initial_menu()
+                exit(1)
             case _:
                 print(red_text('Invalid choice. Please choose again'))
 
