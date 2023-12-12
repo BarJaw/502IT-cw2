@@ -124,7 +124,7 @@ class Customer(User):
 
                 # Close the connection
                 cursor.close()
-        return total_amount
+        return round(total_amount, 2)
 
     def view_cart(self):
         print(blue_text("---- My Cart ----"))
