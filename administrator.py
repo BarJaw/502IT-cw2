@@ -1,75 +1,101 @@
 import sqlite3
 import bcrypt
+from colors import green_text, red_text, blue_text
+from getpass import getpass
 from user import User
+from prettytable import PrettyTable
 
 class Administrator(User):
-    def __init__(self, fname, lname):
-        self.fname = fname
-        self.lname = lname
+    def __init__(self, User):
+        super().__init__(User.fname, User.lname, User.username, role="administrator")
     
     @staticmethod
     def view_employees():
-        # Connect to database
-        conn = sqlite3.connect('Bookstore.db')
-        # Create a cursor
-        cursor = conn.cursor()
+        con = sqlite3.connect("db/Bookstore.db")
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
 
-        # Query The Database
-        cursor.execute("SELECT rowid, fname, lname FROM Users WHERE role = 'employee'")
-        items = cursor.fetchall()
-
-        for item in items:
-            print(item)
-
-        # Close our connection
-        conn.close()
+        cur.execute("SELECT id, fname, lname, username, role FROM Users WHERE role = 'employee' ORDER BY RANDOM();")
+        column_names = [description[0] for description in cur.description]
+        
+        table = PrettyTable(column_names)
+        table.align = 'l'
+        for row in cur.fetchall():
+            table.add_row(row)
+        print(table)
+        
+        con.close()
     
     @staticmethod
-    def add_employee(fname: str, lname: str, username: str, password: str):
-        # Connect to database
-        conn = sqlite3.connect('Bookstore.db')
-        # Create a cursor
+    def add_employee():
+        conn = sqlite3.connect('db/Bookstore.db')
         cursor = conn.cursor()
 
+        print('Please provide the first name of the employee.')
+        fname = input(blue_text('First name: '))
+        while not fname:
+            print(red_text('The name you provided is incorrect. Please try again.'))
+            fname = input(blue_text('First name: '))
+        
+        print('Please provide the last name of the employee.')
+        lname = input(blue_text('Last name: '))
+        while not lname:
+            print(red_text('The last name you provided is incorrect. Please try again.'))
+            lname = input(blue_text('Last name: '))
+        
+        username = lname + fname[0]
         role = "employee"
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        
+        print('Please ask employee to input their password.')
+        hashed_password = bcrypt.hashpw(getpass(blue_text('Password: ')).encode('utf-8'), bcrypt.gensalt())
+        while not hashed_password:
+            print(red_text('Provided password is empty. Please try again.'))
+            hashed_password = bcrypt.hashpw(getpass(blue_text('Password: ')).encode('utf-8'), bcrypt.gensalt())
+        hashed_password = hashed_password.decode("utf-8")
+        try:
+            if Administrator.check_if_username_exists(username) is None:
+                cursor.execute("INSERT INTO Users (fname, lname, username, password_hash, role) VALUES (?, ?, ?, ?, ?)", (fname, lname, username, hashed_password, role))
+                print(green_text(f'Employee successfully added with the username of {username}.'))
+            else:
+                print(red_text("This username is taken"))
+        except:
+            print(red_text('Something went wrong. Please try again.'))
 
-        if Administrator.check_if_username_exists(username) == False:
-            cursor.execute("INSERT INTO Users VALUES (?, ?, ?, ?, ?)", (fname, lname, username, hashed_password, role))
-        else:
-            print("This username is taken")
-
-        # Commit the changes
         conn.commit()
-        # Close our connection
         conn.close()
 
     @staticmethod
-    def remove_employee(username: str):
-        # Connect to database
-        conn = sqlite3.connect('Bookstore.db')
-        # Create a cursor
+    def remove_employee():
+        conn = sqlite3.connect('db/Bookstore.db')
         cursor = conn.cursor()
 
-        if Administrator.check_if_username_exists(username):
-            cursor.execute("DELETE FROM Users WHERE login = (?)", username)
-
-        # Commit the changes
+        print('Please provide the username of employee you want to remove.')
+        username = input(blue_text('Username: '))
+        while not username:
+            print(red_text('The username you provided is incorrect. Please try again.'))
+            username = input(blue_text('Username: '))
+            
+        try:
+            if Administrator.check_if_username_exists(username):
+                print(green_text('Username successfully deleted.'))
+                cursor.execute("DELETE FROM Users WHERE username = ?", (username,))
+            else:
+                print(red_text('User with such username does not exist.'))
+        except:
+            print(red_text('Something went wrong. Please try again.'))
+            
         conn.commit()
-        # Close our connection
         conn.close()
 
     @staticmethod
     def check_if_username_exists(username: str):
         # Connect to database
-        conn = sqlite3.connect('Bookstore.db')
+        conn = sqlite3.connect('db/Bookstore.db')
         # Create a cursor
         cursor = conn.cursor()
 
-        cursor.execute("SELECT username FROM Users WHERE username = (?)", username)
-        username_check = cursor.fetchall()
-
-        if len(username_check) == 0:
-            return False
-        else:
-            return True
+        cursor.execute("SELECT username FROM Users WHERE username = ?", (username,))
+        result = cursor.fetchone() 
+        conn.close()
+        
+        return result

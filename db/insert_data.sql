@@ -4,9 +4,9 @@ VALUES
     (
         'b',
         'j',
-        'bj2',
+        'bj3',
         '$2a$12$LiTzvF55MoKtPCLdtWqOMuc5u4knQiiz3oTUeaC1Jqb3v6k.ySIAO',
-        'employee'
+        'administrator'
     );
 
 INSERT INTO
