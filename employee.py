@@ -123,7 +123,6 @@ class Employee(User):
 
     @staticmethod
     def accept_order():
-        # ALSO ADD EXCEPTIONS (check if order is waiting for acceptance and only modify those, otherwise spit an error)
         con = sqlite3.connect("db/Bookstore.db")
         con.row_factory = sqlite3.Row
         cur = con.cursor()
@@ -153,4 +152,24 @@ class Employee(User):
 
     @staticmethod
     def cancel_order():
-        ...
+        con = sqlite3.connect("db/Bookstore.db")
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        print('Please provide the order id you want to cancel.')
+        order_id = input(blue_text('Order id: '))
+        while not order_id or not order_id.isdecimal():
+            print(red_text('Order id you provided is incorrect. Please try again.'))
+            order_id = input(blue_text('Order id: '))
+        
+        if cur.execute(f"SELECT * FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
+            print(red_text('Order with such id does not exist.'))
+        
+        else:
+            try:
+                cur.execute(
+                    "UPDATE Orders SET status = 'cancelled' WHERE id = ?;", (order_id,))
+                print(green_text('The order has been cancelled.'))
+            except:
+                print(red_text('Something went wrong. Please try again.'))
+        con.commit()
+        con.close()
