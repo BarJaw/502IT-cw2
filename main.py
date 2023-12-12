@@ -72,19 +72,19 @@ class System():
 
     @staticmethod
     def view_customer_menu(customer):
-        print('1. Search for a book\n2. View book details\n3. Add book to cart\n4. Checkout \n5. View account details \n6. Change account details\n7. Exit \n')
+        print('1. Search for a book\n2. Add book to cart\n3. View cart\n4. Checkout\n5. ... \n6. ...\n7. Exit \n')
         choice = input(blue_text('Choose an option: '))
         match choice:
             case '1':
-                Customer.search_book()
+                customer.search_book()
             case '2':
-                ...
-            case '3':
                 customer.add_to_cart()
-            case '4':
-                Customer.check_out_cart()
-            case '5':
+            case '3':
                 customer.view_cart()
+            case '4':
+                customer.check_out_cart()
+            case '5':
+                ...
             case '6':
                 ...
             case '7':
