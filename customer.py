@@ -71,8 +71,8 @@ class Customer(User):
         # Create a cursor
         cursor = conn.cursor()
 
-        book = input("Input the name of the book: ")
-        quantity = int(input("Input the quantity: "))
+        book = input(blue_text("Input the name of the book: "))
+        quantity = int(input(blue_text("Input the quantity: ")))
         book_quantity = cursor.execute("SELECT stock FROM Books WHERE name = ?", (book,)).fetchone()[0]
         if book in cursor.execute("SELECT name FROM Books WHERE name = ?", (book,)).fetchone():
             if quantity > 0:
@@ -83,7 +83,7 @@ class Customer(User):
                             book_titles.extend(list(position.keys()))
                         if book not in book_titles:
                             self.cart.append({book: quantity})
-                            print("Successfully appended")
+                            print(green_text("Successfully appended."))
                         else:
                             for position in self.cart:
                                 for book_name in position:
@@ -91,18 +91,17 @@ class Customer(User):
                                         position[book] += quantity
                                         if position[book] > book_quantity:
                                             position[book] -= quantity
-                                            print("The amount exceeds book's stock value")
+                                            print(red_text("The amount exceeds book's stock value."))
                                         else:
-                                            print("Successfully appended")
+                                            print(green_text("Successfully appended."))
                     else:
-                        print("Requested amount is more than left in stock")
+                        print(red_text("Requested amount is more than left in stock."))
                 else:
-                    print(f"No more {book} left in stock")
+                    print(red_text(f"No more {book} left in stock."))
             else:
-                print("Quantity should be more than 0")
+                print(red_text("Quantity should be more than 0."))
         else:
-            print("No such book in the store")
-        print(self.cart)
+            print(red_text("No such book in the store."))
         # Close the connection
         cursor.close()
 
@@ -123,7 +122,7 @@ class Customer(User):
         return total_amount
 
     def view_cart(self):
-        print("---- My Cart ----")
+        print(blue_text("---- My Cart ----"))
         if self.cart:
             for position in self.cart:
                 for book, quantity in position.items():
@@ -131,19 +130,19 @@ class Customer(User):
             total_amount = self.calculate_total_amount()
             print(f"Total amount: {total_amount:.2f} EUR")
         else:
-            print("Your cart is empty")
+            print("Your cart is empty.")
 
     def check_out_cart(self):
         if self.cart:
             # Connect to database
-            conn = sqlite3.connect('db/Bookstore')
+            conn = sqlite3.connect('db/Bookstore.db')
             # Create a cursor
             cursor = conn.cursor()
 
-            city = input("Please provide the city of the delivery: ").capitalize()
+            city = input(blue_text("Please provide the city of the delivery: ")).capitalize()
 
             if city in cursor.execute(f"SELECT city FROM Cities WHERE city = {city}").fetchall(): # if such city exists
-                street = input("Please provide the street of the delivery: ") # street input
+                street = input(blue_text("Please provide the street of the delivery: ")) # street input
                 address = f"{city}, {street}" # concatenate city and street into one variable
 
                 order_date_str = datetime.now().strftime("%d.%m.%Y") # current date as a string
@@ -182,11 +181,11 @@ class Customer(User):
                 # Close the connection
                 conn.close()
 
-                print("Successfully checked out")
+                print(green_text("Successfully checked out."))
                 self.cart.clear()
             else:
-                print("Please provide the valid city name, here is the list of similar cities:")
-                similar_cities = cursor.execute(f"SELECT city WHERE city LIKE '%{city}%'").fetchall()
+                print(red_text("Please provide the valid city name, here is the list of similar cities:"))
+                similar_cities = cursor.execute(f"SELECT city FROM Cities WHERE city LIKE ?;", (f'%{city}%')).fetchall()
                 for city in similar_cities:
                     print(city)
                 self.check_out_cart()
@@ -194,7 +193,7 @@ class Customer(User):
                 # Close the connection
                 conn.close()
         else:
-            print("Your cart is empty")
+            print("Your cart is empty.")
 
     @staticmethod
     def search_book():
