@@ -15,14 +15,14 @@ class System():
     @staticmethod
     def main():
         banner()
-        user = User('Bartosz', 'Jaworski', 'barjaw', 'employee')
+        user = User('Bartosz', 'Jaworski', 'barjaw', 'customer')
         while not user:
             user = System.view_initial_menu()
 
         if user.role == 'customer':
             customer = Customer(user)
             while True:
-                System.view_customer_menu()
+                System.view_customer_menu(customer)
         elif user.role == 'employee':
             employee = Employee(user)
             while True:
@@ -71,7 +71,7 @@ class System():
                 print(red_text('Invalid choice. Please choose again'))
 
     @staticmethod
-    def view_customer_menu():
+    def view_customer_menu(customer):
         print('1. Search for a book\n2. View book details\n3. Add book to cart\n4. Checkout \n5. View account details \n6. Change account details\n7. Exit \n')
         choice = input(blue_text('Choose an option: '))
         match choice:
@@ -80,9 +80,9 @@ class System():
             case '2':
                 ...
             case '3':
-                ...
+                customer.add_to_cart()
             case '4':
-                ...
+                Customer.check_out_cart()
             case '5':
                 ...
             case '6':

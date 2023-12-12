@@ -67,15 +67,15 @@ class Customer(User):
 
     def add_to_cart(self):
         # Connect to database
-        conn = sqlite3.connect('db/Bookstore')
+        conn = sqlite3.connect('db/Bookstore.db')
         # Create a cursor
         cursor = conn.cursor()
 
         book = input("Input the name of the book: ")
         quantity = int(input("Input the quantity"))
-        book_quantity = cursor.execute("SELECT stock FROM Books WHERE name = (?)", book).fetchone()
-
-        if book in cursor.execute("SELECT name FROM Books WHERE name = (?)", book).fetchall():
+        book_quantity = cursor.execute("SELECT stock FROM Books WHERE name = ?", (book,)).fetchone()[0]
+        print(book_quantity)
+        if book in cursor.execute("SELECT name FROM Books WHERE name = ?", (book,)).fetchone():
             if quantity > 0:
                 if book_quantity:
                     if book_quantity >= quantity:  # check if the requested amount of books is available and it is more 0
@@ -99,7 +99,7 @@ class Customer(User):
                 print("Quantity should be more than 0")
         else:
             print("No such book in the store")
-
+        print(self.cart)
         # Close the connection
         cursor.close()
 
