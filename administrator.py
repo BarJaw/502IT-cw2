@@ -29,7 +29,6 @@ class Administrator(User):
     def add_employee():
         conn = sqlite3.connect('db/Bookstore.db')
         cursor = conn.cursor()
-        # fname: str, lname: str, username: str, password: str
 
         print('Please provide the first name of the employee.')
         fname = input(blue_text('First name: '))
@@ -60,18 +59,25 @@ class Administrator(User):
         conn.close()
 
     @staticmethod
-    def remove_employee(username: str):
-        # Connect to database
-        conn = sqlite3.connect('Bookstore.db')
-        # Create a cursor
+    def remove_employee():
+        conn = sqlite3.connect('db/Bookstore.db')
         cursor = conn.cursor()
 
-        if Administrator.check_if_username_exists(username):
-            cursor.execute("DELETE FROM Users WHERE login = (?)", username)
-
-        # Commit the changes
+        print('Please provide the username of employee you want to remove.')
+        username = input(blue_text('Username: '))
+        while not username:
+            print(red_text('The username you provided is incorrect. Please try again.'))
+            username = input(blue_text('Username: '))
+            
+        try:
+            if Administrator.check_if_username_exists(username):
+                cursor.execute("DELETE FROM Users WHERE username = ?", (username,))
+            else:
+                print(red_text('User with such username does not exist.'))
+        except:
+            print(red_text('Something went wrong. Please try again.'))
+            
         conn.commit()
-        # Close our connection
         conn.close()
 
     @staticmethod
