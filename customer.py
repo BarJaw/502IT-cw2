@@ -75,19 +75,19 @@ class Customer(User):
 
         if book in cursor.execute("SELECT name FROM Books WHERE name = (?)", book).fetchall():
             if quantity > 0:
-                if len(book_quantity) != 0:
+                if book_quantity:
                     if book_quantity >= quantity:  # check if the requested amount of books is available and it is more 0
                         if book not in self.cart:  # check if the book hasn't been added to the cart before
                             self.cart.append({book: quantity})
                         else:
                             for position in self.cart:
-                                for book_obj in position:
-                                    if book_obj == book:
+                                for book_name in position:
+                                    if book_name == book:
                                         position[book] += quantity
                     else:
                         print("Requested amount is more than left in stock")
                 else:
-                    print(f"No more {book.name} left in stock")
+                    print(f"No more {book} left in stock")
             else:
                 print("Quantity should be more than 0")
         else:
@@ -97,19 +97,28 @@ class Customer(User):
         cursor.close()
 
     def calculate_total_amount(self):
+        # Connect to database
+        conn = sqlite3.connect('db/Bookstore')
+        # Create a cursor
+        cursor = conn.cursor()
+
         total_amount = 0
         for position in self.cart:
             for book, quantity in position.items():
-                total_amount += book.price * quantity
+
+                book_price = cursor.execute(f"SELECT price WHERE book = {book}").fetchone()
+                total_amount += book_price * quantity
+                
+                # Close the connection
+                cursor.close()
         return total_amount
 
     def view_cart(self):
         print("---- My Cart ----")
-
         if self.cart:
             for position in self.cart:
                 for book, quantity in position.items():
-                    print(f"{book.name}: {quantity}")
+                    print(f"{book}: {quantity}")
             total_amount = self.calculate_total_amount()
             print(f"Total amount: {total_amount:.2f} EUR")
         else:
@@ -126,7 +135,7 @@ class Customer(User):
 
             if city in cursor.execute(f"SELECT city FROM Cities WHERE city = {city}").fetchall(): # if such city exists
                 street = input("Please provide the street of the delivery: ") # street input
-                address = f"City: {city}, Street: {street}" # concatenate city and street into one variable
+                address = f"{city}, {street}" # concatenate city and street into one variable
 
                 order_date_str = datetime.now().strftime("%d.%m.%Y") # current date as a string
                 order_date = datetime.strptime(order_date_str, "%d.%m.%Y") # convert current date into a date object
@@ -155,9 +164,9 @@ class Customer(User):
                 # Subtract the stock quantity of the checked out books
                 for position in self.cart:  # iterate through the cart
                     for book, quantity in position.items():
-                        current_stock = cursor.execute(f"SELECT stock FROM Books WHERE name = {book.name}").fetchone() # current stock of the book
+                        current_stock = cursor.execute(f"SELECT stock FROM Books WHERE name = {book}").fetchone() # current stock of the book
                         updated_stock = current_stock - quantity # updated stock number
-                        cursor.executemany(f"UPDATE Books SET stock = {updated_stock} WHERE name = {book.name}") # update the stock of the book
+                        cursor.executemany(f"UPDATE Books SET stock = {updated_stock} WHERE name = {book}") # update the stock of the book
 
                 # Commit the changes to the database
                 conn.commit()
@@ -191,11 +200,11 @@ class Customer(User):
 
 
         # Get column names
-        column_names = [description[0] for description in cursor.description]
+        column_names = [description[0] for description in cur.description]
 
         # Display the results in a table
         table = PrettyTable(column_names)
         table.align = 'l'
-        for row in cursor.fetchall():  # MAYBE APPLY SORTING HERE
+        for row in cur.fetchall():  # MAYBE APPLY SORTING HERE
             table.add_row(row)
         print(table)
