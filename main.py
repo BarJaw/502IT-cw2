@@ -67,22 +67,20 @@ class System():
 
     @staticmethod
     def view_customer_menu():
-        print('1. Search for a book\n2. View book details\n3. Add book to cart\n4. Checkout \n5. View account details \n6. Change account details\n7. Exit \n')
+        print('1. Search for a book\n2. Add book to cart\n3. Checkout \n4. View account details \n5. Change account details\n6. Exit \n')
         choice = input(blue_text('Choose an option: '))
         match choice:
             case '1':
                 Customer.search_book()
             case '2':
-                ...
+                Customer.add_to_cart()
             case '3':
-                ...
+                Customer.check_out_cart()
             case '4':
-                ...
+                Customer.view_account_details()
             case '5':
-                ...
+                Customer.change_account_details()
             case '6':
-                ...
-            case '7':
                 exit(1)
             case _:
                 print(red_text('Invalid choice. Please choose again'))
