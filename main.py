@@ -2,30 +2,29 @@ from banner import banner
 from customer import Customer
 from employee import Employee
 from administrator import Administrator
-from order import Order
-from book import Book
 from user import User
 from colors import blue_text, green_text, red_text
 from getpass import getpass
-import sqlite3
-import bcrypt
 
 
 class System():
     @staticmethod
     def main():
         banner()
-        user = None # User('Bartosz', 'Jaworski', 'barjaw', 'administrator')
+        user = None
         while not user:
             user = System.view_initial_menu()
         if user.role == 'customer':
             while True:
+                customer = Customer(user)
                 System.view_customer_menu(customer)
         elif user.role == 'employee':
             while True:
+                employee = Employee(user)
                 System.view_employee_menu()
         elif user.role == 'administrator':
             while True:
+                administrator = Administrator(user)
                 System.view_administrator_menu()
 
     @staticmethod
@@ -79,7 +78,7 @@ class System():
             case '4':
                 customer.check_out_cart()
             case '5':
-                Customer.change_account_details()
+                ...
             case '6':
                 exit(1)
             case _:
