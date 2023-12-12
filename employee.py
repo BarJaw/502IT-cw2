@@ -137,8 +137,9 @@ class Employee(User):
             print(red_text('Order with such id does not exist.'))
 
         elif cur.execute(f"SELECT status FROM Orders WHERE id = ?", (order_id,)).fetchone()['status'] != 'waiting for acceptance':
-            print(red_text('This order cannot be accepted. It is not waiting for acceptance'))
-        
+            print(
+                red_text('This order cannot be accepted. It is not waiting for acceptance'))
+
         else:
             try:
                 cur.execute(
@@ -160,10 +161,10 @@ class Employee(User):
         while not order_id or not order_id.isdecimal():
             print(red_text('Order id you provided is incorrect. Please try again.'))
             order_id = input(blue_text('Order id: '))
-        
+
         if cur.execute(f"SELECT * FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
             print(red_text('Order with such id does not exist.'))
-        
+
         else:
             try:
                 cur.execute(
