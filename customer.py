@@ -141,15 +141,15 @@ class Customer(User):
 
             city = input(blue_text("Please provide the city of the delivery: ")).capitalize()
 
-            if city in cursor.execute(f"SELECT city FROM Cities WHERE city = {city}").fetchall(): # if such city exists
+            if city in cursor.execute("SELECT city FROM Cities WHERE city = ?", (city,)).fetchone()[0]: # if such city exists
                 street = input(blue_text("Please provide the street of the delivery: ")) # street input
                 address = f"{city}, {street}" # concatenate city and street into one variable
 
                 order_date_str = datetime.now().strftime("%d.%m.%Y") # current date as a string
                 order_date = datetime.strptime(order_date_str, "%d.%m.%Y") # convert current date into a date object
-                shipment_time = cursor.execute(f"SELECT shipment_time FROM Cities WHERE city = {city}").fetchone() # get the shipment time from database
+                shipment_time = cursor.execute("SELECT shipment_time FROM Cities WHERE city = ?", (city,)).fetchone()[0] # get the shipment time from database
                 estimated_date_of_arrival = order_date + timedelta(days=shipment_time) # calculate the estimated date of arrival
-
+                total_amount = self.calculate_total_amount()
                 # calculate priority based on total amount
                 if total_amount >= 100:
                     priority = 10
@@ -161,20 +161,20 @@ class Customer(User):
                 # status of an order
                 status = "in progress"
 
-                my_id = cursor.execute(f"SELECT id FROM Users WHERE username = {self.username}").fetchone() # get id of the user based on his username
+                my_id = cursor.execute("SELECT id FROM Users WHERE username = ?", (self.username,)).fetchone() # get id of the user based on his username
 
                 total_amount = self.calculate_total_amount()
                 
                 # Add the order into the database
                 cursor.execute("INSERT INTO Orders VALUES (?, ?, ?, ?, ?, ?)",
-                            (order_date, priority, status, address, estimated_date_of_arrival, total_amount, self.cart, my_id))
+                            (order_date, priority, status, address, estimated_date_of_arrival, total_amount, self.cart, my_id,))
 
                 # Subtract the stock quantity of the checked out books
                 for position in self.cart:  # iterate through the cart
                     for book, quantity in position.items():
-                        current_stock = cursor.execute(f"SELECT stock FROM Books WHERE name = {book}").fetchone() # current stock of the book
+                        current_stock = cursor.execute("SELECT stock FROM Books WHERE name = ?", (book,)).fetchone() # current stock of the book
                         updated_stock = current_stock - quantity # updated stock number
-                        cursor.executemany(f"UPDATE Books SET stock = {updated_stock} WHERE name = {book}") # update the stock of the book
+                        cursor.executemany("UPDATE Books SET stock = ? WHERE name = ?", (updated_stock, book,)) # update the stock of the book
 
                 # Commit the changes to the database
                 conn.commit()
@@ -185,7 +185,7 @@ class Customer(User):
                 self.cart.clear()
             else:
                 print(red_text("Please provide the valid city name, here is the list of similar cities:"))
-                similar_cities = cursor.execute(f"SELECT city FROM Cities WHERE city LIKE ?;", (f'%{city}%')).fetchall()
+                similar_cities = cursor.execute(f"SELECT city FROM Cities WHERE city LIKE ?;", (f'%{city}%',)).fetchall()
                 for city in similar_cities:
                     print(city)
                 self.check_out_cart()
