@@ -1,6 +1,7 @@
 import sqlite3
 import bcrypt
 from colors import green_text, red_text, blue_text
+from getpass import getpass
 from user import User
 from prettytable import PrettyTable
 
@@ -44,12 +45,17 @@ class Administrator(User):
         
         username = lname + fname[0]
         role = "employee"
-        hashed_password = bcrypt.hashpw(''.encode('utf-8'), bcrypt.gensalt())
         
+        print('Please ask employee to input their password.')
+        hashed_password = bcrypt.hashpw(getpass(blue_text('Password: ')).encode('utf-8'), bcrypt.gensalt())
+        while not hashed_password:
+            print(red_text('Provided password is empty. Please try again.'))
+            hashed_password = bcrypt.hashpw(getpass(blue_text('Password: ')).encode('utf-8'), bcrypt.gensalt())
+        hashed_password = hashed_password.decode("utf-8")
         try:
             if Administrator.check_if_username_exists(username) is None:
                 cursor.execute("INSERT INTO Users (fname, lname, username, password_hash, role) VALUES (?, ?, ?, ?, ?)", (fname, lname, username, hashed_password, role))
-                print(green_text('Employee successfully added.'))
+                print(green_text(f'Employee successfully added with the username of {username}.'))
             else:
                 print(red_text("This username is taken"))
         except:
@@ -71,6 +77,7 @@ class Administrator(User):
             
         try:
             if Administrator.check_if_username_exists(username):
+                print(green_text('Username successfully deleted.'))
                 cursor.execute("DELETE FROM Users WHERE username = ?", (username,))
             else:
                 print(red_text('User with such username does not exist.'))

@@ -15,7 +15,7 @@ class System():
     @staticmethod
     def main():
         banner()
-        user = User('Bartosz', 'Jaworski', 'barjaw', 'administrator')
+        user = None # User('Bartosz', 'Jaworski', 'barjaw', 'administrator')
         while not user:
             user = System.view_initial_menu()
 
@@ -87,7 +87,7 @@ class System():
             case '6':
                 ...
             case '7':
-                exit(1)
+                System.view_initial_menu()
             case _:
                 print(red_text('Invalid choice. Please choose again'))
 
@@ -109,7 +109,7 @@ class System():
             case '6':
                 Employee.cancel_order()
             case '7':
-                exit(1)
+                System.view_initial_menu()
             case _:
                 print(red_text('Invalid choice. Please choose again'))
     
@@ -125,7 +125,7 @@ class System():
             case '3':
                 Administrator.remove_employee()
             case '4':
-                exit(1)
+                System.view_initial_menu()
             case _:
                 print(red_text('Invalid choice. Please choose again'))
 
