@@ -42,6 +42,7 @@ class System():
         return creds
 
     @staticmethod
+
     def view_initial_menu():
         print('\n1. Login\n2. Register\n3. Exit')
         choice = input(blue_text('Choose an option: '))
@@ -94,22 +95,29 @@ class System():
 
     @staticmethod
     def view_employee_menu():
-        print('1. View books\n2. Add book to database\n3. Delete book from database\n4. View orders\n5. Accept order\n6. Cancel order\n7. Exit \n')
+        print('1. View books\n2. View sorted books A-Z\n3. Add book to database\n4. Delete book from database\n5. View orders\n6. Accept order\n7. Cancel order\n8. Exit \n')
         choice = input(blue_text('Choose an option: '))
         match choice:
             case '1':
                 Employee.view_books()
             case '2':
-                Employee.add_book()
+                Customer.view_books_alphabetically() #insertion sorting
             case '3':
-                Employee.remove_book()
+                Employee.add_book()
+                
             case '4':
-                Employee.view_orders()
+                Employee.remove_book()
+                
             case '5':
-                Employee.accept_order()
+                Employee.view_orders()
+                
             case '6':
-                Employee.cancel_order()
+                Employee.accept_order()
+                
             case '7':
+                Employee.cancel_order()
+                
+            case '8':
                 exit(1)
             case _:
                 print(red_text('Invalid choice. Please choose again'))
