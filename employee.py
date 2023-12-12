@@ -1,6 +1,6 @@
 import sqlite3
-from user import User  # Assuming you have a User class defined in user.py
-from order import Order  # Assuming you have an Order class defined in order.py
+from user import User
+from order import Order
 from book import Book
 from colors import red_text, green_text, blue_text
 from getpass import getpass
