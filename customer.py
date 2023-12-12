@@ -191,11 +191,11 @@ class Customer(User):
 
 
         # Get column names
-        column_names = [description[0] for description in cursor.description]
+        column_names = [description[0] for description in cur.description]
 
         # Display the results in a table
         table = PrettyTable(column_names)
         table.align = 'l'
-        for row in cursor.fetchall():  # MAYBE APPLY SORTING HERE
+        for row in cur.fetchall():  # MAYBE APPLY SORTING HERE
             table.add_row(row)
         print(table)

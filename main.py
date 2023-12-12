@@ -15,23 +15,18 @@ class System():
     @staticmethod
     def main():
         banner()
-        user = User('Bartosz', 'Jaworski', 'barjaw', 'employee')
+        user = None # User('Bartosz', 'Jaworski', 'barjaw', 'administrator')
         while not user:
             user = System.view_initial_menu()
-
         if user.role == 'customer':
-            customer = Customer(user)
             while True:
                 System.view_customer_menu()
         elif user.role == 'employee':
-            employee = Employee(user)
             while True:
                 System.view_employee_menu()
         elif user.role == 'administrator':
-            administrator = Administrator(user)
             while True:
-                pass
-                # System.view_administrator_menu()
+                System.view_administrator_menu()
 
     @staticmethod
     def get_credentials() -> dict:
@@ -72,22 +67,20 @@ class System():
 
     @staticmethod
     def view_customer_menu():
-        print('1. Search for a book\n2. View book details\n3. Add book to cart\n4. Checkout \n5. View account details \n6. Change account details\n7. Exit \n')
+        print('1. Search for a book\n2. Add book to cart\n3. Checkout \n4. View account details \n5. Change account details\n6. Exit \n')
         choice = input(blue_text('Choose an option: '))
         match choice:
             case '1':
                 Customer.search_book()
             case '2':
-                ...
+                Customer.add_to_cart()
             case '3':
-                ...
+                Customer.check_out_cart()
             case '4':
-                ...
+                Customer.view_account_details()
             case '5':
-                ...
+                Customer.change_account_details()
             case '6':
-                ...
-            case '7':
                 exit(1)
             case _:
                 print(red_text('Invalid choice. Please choose again'))
@@ -113,7 +106,22 @@ class System():
                 exit(1)
             case _:
                 print(red_text('Invalid choice. Please choose again'))
-
+    
+    @staticmethod
+    def view_administrator_menu():
+        print('1. View employees\n2. Add employee\n3. Remove employee\n4. Exit\n')
+        choice = input(blue_text('Choose an option: '))
+        match choice:
+            case '1':
+                Administrator.view_employees()
+            case '2':
+                Administrator.add_employee()
+            case '3':
+                Administrator.remove_employee()
+            case '4':
+                exit(1)
+            case _:
+                print(red_text('Invalid choice. Please choose again'))
 
 if __name__ == '__main__':
     System.main()

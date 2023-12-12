@@ -1,6 +1,6 @@
 import sqlite3
-from user import User
-from order import Order
+from user import User  # Assuming you have a User class defined in user.py
+from order import Order  # Assuming you have an Order class defined in order.py
 from book import Book
 from colors import red_text, green_text, blue_text
 from getpass import getpass
@@ -29,7 +29,7 @@ class Employee(User):
         for row in cur.fetchall():
             table.add_row(row)
         print(table)
-
+        
         con.close()
 
     @staticmethod
@@ -87,13 +87,13 @@ class Employee(User):
         con = sqlite3.connect("db/Bookstore.db")
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-
+        
         print('Please provide the book title you want to delete: ')
         book_name = input(blue_text('Book title: '))
         while not book_name:
             print(red_text('Book title you provided is incorrect. Please try again.'))
             book_name = input(blue_text('Book title: '))
-
+        
         if cur.execute("SELECT name FROM Books WHERE name = (?)", (book_name,)).fetchone() is not None:
             cur.execute("DELETE FROM Books WHERE name = ?", (book_name,))
             con.commit()
@@ -101,76 +101,53 @@ class Employee(User):
             print(green_text('Book deleted successfully.'))
         else:
             print(red_text('Book with such title does not exists.'))
-
+        
     @staticmethod
     def view_orders():
         con = sqlite3.connect("db/Bookstore.db")
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-
-        # SORTING ALGORITHM
-        cur.execute(f"SELECT * FROM Orders ORDER BY RANDOM();")
-
+        
+        cur.execute(f"SELECT * FROM Orders ORDER BY RANDOM();") # SORTING ALGORITHM
+        
         column_names = [description[0] for description in cur.description]
-
+        
         table = PrettyTable(column_names)
         table.align = 'l'
         for row in cur.fetchall():
             table.add_row(row)
         print(table)
-
+        
         con.close()
-
+    
     @staticmethod
     def accept_order():
+        # ALSO ADD EXCEPTIONS (check if order is waiting for acceptance and only modify those, otherwise spit an error)
         con = sqlite3.connect("db/Bookstore.db")
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-
+        
         print('Please provide the order id you want to accept.')
         order_id = input(blue_text('Order id: '))
-        while not order_id or not order_id.isdecimal():
+        if not order_id or not order_id.isdecimal():
             print(red_text('Order id you provided is incorrect. Please try again.'))
             order_id = input(blue_text('Order id: '))
-
-        if cur.execute(f"SELECT * FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
+        
+        if cur.execute(f"SELECT id, status FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
             print(red_text('Order with such id does not exist.'))
-
-        elif cur.execute(f"SELECT status FROM Orders WHERE id = ?", (order_id,)).fetchone()['status'] != 'waiting for acceptance':
-            print(
-                red_text('This order cannot be accepted. It is not waiting for acceptance'))
-
+        
+        
+        
         else:
             try:
-                cur.execute(
-                    "UPDATE Orders SET status = 'accepted' WHERE id = ?;", (order_id,))
+                cur.execute("UPDATE Orders SET status = 'accepted' WHERE id = ?;", (order_id))
                 print(green_text('The order has been accepted.'))
             except:
                 print(red_text('Something went wrong. Please try again.'))
-
+        
         con.commit()
         con.close()
-
+    
     @staticmethod
     def cancel_order():
-        con = sqlite3.connect("db/Bookstore.db")
-        con.row_factory = sqlite3.Row
-        cur = con.cursor()
-        print('Please provide the order id you want to cancel.')
-        order_id = input(blue_text('Order id: '))
-        while not order_id or not order_id.isdecimal():
-            print(red_text('Order id you provided is incorrect. Please try again.'))
-            order_id = input(blue_text('Order id: '))
-
-        if cur.execute(f"SELECT * FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
-            print(red_text('Order with such id does not exist.'))
-
-        else:
-            try:
-                cur.execute(
-                    "UPDATE Orders SET status = 'cancelled' WHERE id = ?;", (order_id,))
-                print(green_text('The order has been cancelled.'))
-            except:
-                print(red_text('Something went wrong. Please try again.'))
-        con.commit()
-        con.close()
+        ...
