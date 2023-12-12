@@ -158,7 +158,7 @@ class Customer(User):
                 order_date_str = datetime.now().strftime(
                     "%d.%m.%Y")  # current date as a string
                 # convert current date into a date object
-                order_date = datetime.strptime(order_date_str, "%d.%m.%Y")
+                order_date = datetime.strptime(order_date_str, "%d.%m.%Y").date()
                 # get the shipment time from database
                 shipment_time = cursor.execute("SELECT shipment_time FROM Cities WHERE city = ?", (city,)).fetchone()[0]  
                 # calculate the estimated date of arrival
@@ -181,7 +181,7 @@ class Customer(User):
 
                 # Add the order into the database
                 cursor.execute("INSERT INTO Orders (date, priority, status, address, estimated_date_of_arrival, amount, book_list, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
-                               (order_date, priority, status, address, estimated_date_of_arrival, total_amount, f'{self.cart}', my_id,))
+                               (order_date.strftime("%d.%m.%Y"), priority, status, address, estimated_date_of_arrival.strftime("%d.%m.%Y"), total_amount, f'{self.cart}', my_id,))
 
                 # Subtract the stock quantity of the checked out books
                 for position in self.cart:  # iterate through the cart
