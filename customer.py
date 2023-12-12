@@ -73,7 +73,8 @@ class Customer(User):
 
         book = input(blue_text("Input the name of the book: "))
         quantity = int(input(blue_text("Input the quantity: ")))
-        book_quantity = cursor.execute("SELECT stock FROM Books WHERE name = ?", (book,)).fetchone()[0]
+        book_quantity = cursor.execute(
+            "SELECT stock FROM Books WHERE name = ?", (book,)).fetchone()[0]
         if book in cursor.execute("SELECT name FROM Books WHERE name = ?", (book,)).fetchone():
             if quantity > 0:
                 if book_quantity:
@@ -91,11 +92,14 @@ class Customer(User):
                                         position[book] += quantity
                                         if position[book] > book_quantity:
                                             position[book] -= quantity
-                                            print(red_text("The amount exceeds book's stock value."))
+                                            print(
+                                                red_text("The amount exceeds book's stock value."))
                                         else:
-                                            print(green_text("Successfully appended."))
+                                            print(green_text(
+                                                "Successfully appended."))
                     else:
-                        print(red_text("Requested amount is more than left in stock."))
+                        print(
+                            red_text("Requested amount is more than left in stock."))
                 else:
                     print(red_text(f"No more {book} left in stock."))
             else:
@@ -114,9 +118,10 @@ class Customer(User):
         total_amount = 0
         for position in self.cart:
             for book, quantity in position.items():
-                book_price = cursor.execute("SELECT price FROM Books WHERE name = ?;", (book,)).fetchone()[0]
+                book_price = cursor.execute(
+                    "SELECT price FROM Books WHERE name = ?;", (book,)).fetchone()[0]
                 total_amount += book_price * quantity
-                
+
                 # Close the connection
                 cursor.close()
         return total_amount
@@ -139,16 +144,25 @@ class Customer(User):
             # Create a cursor
             cursor = conn.cursor()
 
-            city = input(blue_text("Please provide the city of the delivery: ")).capitalize()
+            city = input(
+                blue_text("Please provide the city of the delivery: ")).capitalize()
 
-            if city in cursor.execute("SELECT city FROM Cities WHERE city = ?", (city,)).fetchone()[0]: # if such city exists
-                street = input(blue_text("Please provide the street of the delivery: ")) # street input
-                address = f"{city}, {street}" # concatenate city and street into one variable
+            # if such city exists
+            if city in cursor.execute("SELECT city FROM Cities WHERE city = ?", (city,)).fetchone()[0]:
+                # street input
+                street = input(
+                    blue_text("Please provide the street of the delivery: "))
+                # concatenate city and street into one variable
+                address = f"{city}, {street}"
 
-                order_date_str = datetime.now().strftime("%d.%m.%Y") # current date as a string
-                order_date = datetime.strptime(order_date_str, "%d.%m.%Y") # convert current date into a date object
-                shipment_time = cursor.execute("SELECT shipment_time FROM Cities WHERE city = ?", (city,)).fetchone()[0] # get the shipment time from database
-                estimated_date_of_arrival = order_date + timedelta(days=shipment_time) # calculate the estimated date of arrival
+                order_date_str = datetime.now().strftime(
+                    "%d.%m.%Y")  # current date as a string
+                # convert current date into a date object
+                order_date = datetime.strptime(order_date_str, "%d.%m.%Y")
+                # get the shipment time from database
+                shipment_time = cursor.execute("SELECT shipment_time FROM Cities WHERE city = ?", (city,)).fetchone()[0]  
+                # calculate the estimated date of arrival
+                estimated_date_of_arrival = order_date + timedelta(days=shipment_time)
                 total_amount = self.calculate_total_amount()
                 # calculate priority based on total amount
                 if total_amount >= 100:
@@ -157,24 +171,25 @@ class Customer(User):
                     priority = 1
                 else:
                     priority = math.floor(total_amount / 10)
-                
+
                 # status of an order
-                status = "in progress"
+                status = "waiting for acceptance"
 
-                my_id = cursor.execute("SELECT id FROM Users WHERE username = ?", (self.username,)).fetchone() # get id of the user based on his username
-
+                # get id of the user based on his username
+                my_id = cursor.execute("SELECT id FROM Users WHERE username = ?;", (self.username,)).fetchone()[0]
                 total_amount = self.calculate_total_amount()
-                
+
                 # Add the order into the database
-                cursor.execute("INSERT INTO Orders VALUES (?, ?, ?, ?, ?, ?)",
-                            (order_date, priority, status, address, estimated_date_of_arrival, total_amount, self.cart, my_id,))
+                cursor.execute("INSERT INTO Orders (date, priority, status, address, estimated_date_of_arrival, amount, book_list, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+                               (order_date, priority, status, address, estimated_date_of_arrival, total_amount, f'{self.cart}', my_id,))
 
                 # Subtract the stock quantity of the checked out books
                 for position in self.cart:  # iterate through the cart
                     for book, quantity in position.items():
-                        current_stock = cursor.execute("SELECT stock FROM Books WHERE name = ?", (book,)).fetchone() # current stock of the book
-                        updated_stock = current_stock - quantity # updated stock number
-                        cursor.executemany("UPDATE Books SET stock = ? WHERE name = ?", (updated_stock, book,)) # update the stock of the book
+                        current_stock = cursor.execute("SELECT stock FROM Books WHERE name = ?", (book,)).fetchone()[0]
+                        updated_stock = str(current_stock - quantity)  # updated stock number
+                        # update the stock of the book
+                        cursor.execute("UPDATE Books SET stock = ? WHERE name = ?", (updated_stock, book,))
 
                 # Commit the changes to the database
                 conn.commit()
@@ -184,8 +199,10 @@ class Customer(User):
                 print(green_text("Successfully checked out."))
                 self.cart.clear()
             else:
-                print(red_text("Please provide the valid city name, here is the list of similar cities:"))
-                similar_cities = cursor.execute(f"SELECT city FROM Cities WHERE city LIKE ?;", (f'%{city}%',)).fetchall()
+                print(red_text(
+                    "Please provide the valid city name, here is the list of similar cities:"))
+                similar_cities = cursor.execute(
+                    f"SELECT city FROM Cities WHERE city LIKE ?;", (f'%{city}%',)).fetchall()
                 for city in similar_cities:
                     print(city)
                 self.check_out_cart()
@@ -204,8 +221,8 @@ class Customer(User):
         con = sqlite3.connect("db/Bookstore.db")  # connect to db
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("SELECT * FROM Books WHERE name LIKE ? ORDER BY RANDOM();", (f'%{book_name}%',))
-
+        cur.execute(
+            "SELECT * FROM Books WHERE name LIKE ? ORDER BY RANDOM();", (f'%{book_name}%',))
 
         # Get column names
         column_names = [description[0] for description in cur.description]
