@@ -2,11 +2,11 @@ INSERT INTO
     Users (fname, lname, username, password_hash, role)
 VALUES
     (
-        'b',
-        'j',
+        'Bartosz',
+        'Jaworski',
         'bj3',
         '$2a$12$LiTzvF55MoKtPCLdtWqOMuc5u4knQiiz3oTUeaC1Jqb3v6k.ySIAO',
-        'administrator'
+        'customer'
     );
 
 INSERT INTO
