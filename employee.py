@@ -155,16 +155,16 @@ class Employee(User):
         cur = con.cursor()
 
         print("Please provide the order id you want to cancel.")
-        order_id = input("Order id: ")
+        order_id = input(blue_text("Order id: "))
 
         while not order_id or not order_id.isdecimal():
-            print("Order id you provided is incorrect. Please try again.")
+            print(red_text("Order id you provided is incorrect. Please try again."))
             order_id = input("Order id: ")
 
         order_info = cur.execute("SELECT book_list FROM Orders WHERE id = ?", (order_id,)).fetchone()
 
         if order_info is None:
-            print('Order with such id does not exist.')
+            print(red_text('Order with such id does not exist.'))
 
         elif cur.execute("SELECT status FROM Orders WHERE id = ?", (order_id,)).fetchone()[0] == 'cancelled':
             print(red_text("This order has already been canceled."))
@@ -186,7 +186,7 @@ class Employee(User):
 
                 print(green_text("The order has been cancelled."))
             else:
-                print("Some error occurred. Please try again.")
+                print(red_text("Some error occurred. Please try again."))
 
         con.commit()
         con.close()
