@@ -1,4 +1,5 @@
 import sqlite3
+import ast
 from user import User  # Assuming you have a User class defined in user.py
 from order import Order  # Assuming you have an Order class defined in order.py
 from book import Book
@@ -103,54 +104,89 @@ class Employee(User):
             print(red_text('Book with such title does not exists.'))
         
     @staticmethod
-    def accept_order():
+    def view_orders():
         con = sqlite3.connect("db/Bookstore.db")
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-
+        
+        cur.execute(f"SELECT * FROM Orders ORDER BY RANDOM();") # SORTING ALGORITHM
+        
+        column_names = [description[0] for description in cur.description]
+        
+        table = PrettyTable(column_names)
+        table.align = 'l'
+        for row in cur.fetchall():
+            table.add_row(row)
+        print(table)
+        
+        con.close()
+    
+    @staticmethod
+    def accept_order():
+        # ALSO ADD EXCEPTIONS (check if order is waiting for acceptance and only modify those, otherwise spit an error)
+        con = sqlite3.connect("db/Bookstore.db")
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        
         print('Please provide the order id you want to accept.')
         order_id = input(blue_text('Order id: '))
-        while not order_id or not order_id.isdecimal():
+        if not order_id or not order_id.isdecimal():
             print(red_text('Order id you provided is incorrect. Please try again.'))
             order_id = input(blue_text('Order id: '))
-
-        if cur.execute(f"SELECT * FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
+        
+        if cur.execute(f"SELECT id, status FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
             print(red_text('Order with such id does not exist.'))
-
-        elif cur.execute(f"SELECT status FROM Orders WHERE id = ?", (order_id,)).fetchone()['status'] != 'waiting for acceptance':
-            print(red_text('This order cannot be accepted. It is not waiting for acceptance'))
+        
+        
         
         else:
             try:
-                cur.execute(
-                    "UPDATE Orders SET status = 'accepted' WHERE id = ?;", (order_id,))
+                cur.execute("UPDATE Orders SET status = 'accepted' WHERE id = ?;", (order_id))
                 print(green_text('The order has been accepted.'))
             except:
                 print(red_text('Something went wrong. Please try again.'))
-
+        
         con.commit()
         con.close()
-
+    
     @staticmethod
     def cancel_order():
         con = sqlite3.connect("db/Bookstore.db")
-        con.row_factory = sqlite3.Row
         cur = con.cursor()
-        print('Please provide the order id you want to cancel.')
-        order_id = input(blue_text('Order id: '))
+
+        print("Please provide the order id you want to cancel.")
+        order_id = input("Order id: ")
+
         while not order_id or not order_id.isdecimal():
-            print(red_text('Order id you provided is incorrect. Please try again.'))
-            order_id = input(blue_text('Order id: '))
-        
-        if cur.execute(f"SELECT * FROM Orders WHERE id = ?", (order_id,)).fetchone() is None:
-            print(red_text('Order with such id does not exist.'))
-        
+            print("Order id you provided is incorrect. Please try again.")
+            order_id = input("Order id: ")
+
+        order_info = cur.execute("SELECT book_list FROM Orders WHERE id = ?", (order_id,)).fetchone()
+
+        if order_info is None:
+            print('Order with such id does not exist.')
+
+        elif cur.execute("SELECT status FROM Orders WHERE id = ?", (order_id,)).fetchone()[0] == 'cancelled':
+            print(red_text("This order has already been canceled."))
+
         else:
-            try:
-                cur.execute(
-                    "UPDATE Orders SET status = 'cancelled' WHERE id = ?;", (order_id,))
-                print(green_text('The order has been cancelled.'))
-            except:
-                print(red_text('Something went wrong. Please try again.'))
+            # Evaluate the string representation of the list of dictionaries
+            book_info_list = ast.literal_eval(order_info[0])
+
+            if isinstance(book_info_list, list):
+                for book_info in book_info_list:
+                    if isinstance(book_info, dict):
+                        book_name, quantity = list(book_info.items())[0]
+
+                        # Update Books table
+                        cur.execute("UPDATE Books SET stock = stock + ? WHERE name = ?", (quantity, book_name,))
+
+                # Update Orders table
+                cur.execute("UPDATE Orders SET status = 'cancelled' WHERE id = ?", (order_id,))
+
+                print(green_text("The order has been cancelled."))
+            else:
+                print("Some error occurred. Please try again.")
+
         con.commit()
         con.close()
